@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>排课系统 - 修复工具</title>
+  <style>
+    body {
+      font-family: "Microsoft YaHei", sans-serif;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f7fa;
+    }
+    
+    .container {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    h1 {
+      color: #3a0ca3;
+      text-align: center;
+    }
+    
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 20px 0;
+    }
+    
+    button {
+      padding: 10px 15px;
+      background-color: #4361ee;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    
+    button.danger {
+      background-color: #e63946;
+    }
+    
+    button.secondary {
+      background-color: #4cc9f0;
+    }
+    
+    .status-box {
+      margin-top: 20px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background-color: #f8f9fa;
+    }
+    
+    #status-log {
+      white-space: pre-wrap;
+      font-family: Consolas, monospace;
+    }
+    
+    .note {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #fff3cd;
+      border-left: 4px solid #ffc107;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>排课系统修复工具</h1>
+    
+    <div class="note">
+      <p>此页面用于修复登录页面不断刷新的问题。如果您无法正常登录，请尝试下方的修复选项。</p>
+    </div>
+    
+    <div class="button-group">
+      <button id="check-data" class="secondary">检查数据状态</button>
+      <button id="fix-data">修复数据</button>
+      <button id="reset-data" class="danger">完全重置数据</button>
+      <button id="goto-login">返回登录页面</button>
+    </div>
+    
+    <div class="status-box">
+      <h3>状态信息</h3>
+      <div id="status-log">等待操作...</div>
+    </div>
+  </div>
+  
+  <script>
+    // 状态日志函数
+    function log(message) {
+      const logElement = document.getElementById('status-log');
+      const timestamp = new Date().toLocaleTimeString();
+      logElement.textContent += `\n[${timestamp}] ${message}`;
+      console.log(message);
+    }
+    
+    // 检查数据状态
+    document.getElementById('check-data').addEventListener('click', function() {
+      log('正在检查数据状态...');
+      
+      try {
+        // 检查localStorage中的数据
+        const teachers = localStorage.getItem('teachers');
+        const rooms = localStorage.getItem('rooms');
+        const schedules = localStorage.getItem('schedules');
+        const dataVersion = localStorage.getItem('dataVersion');
+        
+        log(`数据版本: ${dataVersion || '未设置'}`);
+        log(`教师数据: ${teachers ? '存在' : '不存在'}`);
+        log(`教室数据: ${rooms ? '存在' : '不存在'}`);
+        log(`课程数据: ${schedules ? '存在' : '不存在'}`);
+        
+        if (teachers) {
+          try {
+            const teachersArray = JSON.parse(teachers);
+            log(`教师数量: ${teachersArray.length}`);
+            const adminExists = teachersArray.some(t => t.role === 'admin');
+            log(`管理员账号: ${adminExists ? '存在' : '不存在'}`);
+          } catch (e) {
+            log(`教师数据解析错误: ${e.message}`);
+          }
+        }
+        
+        // 检查sessionStorage
+        const currentUser = sessionStorage.getItem('currentUser');
+        log(`当前用户: ${currentUser ? '已登录' : '未登录'}`);
+        
+        log('数据检查完成');
+      } catch (error) {
+        log(`检查失败: ${error.message}`);
+      }
+    });
+    
+    // 修复数据
+    document.getElementById('fix-data').addEventListener('click', function() {
+      log('开始修复数据...');
+      
+      try {
+        // 标准教师数据
+        const standardTeachers = [
+          {
+            id: 1,
+            teacherId: 1,
+            name: "杨小菲",
+            username: "teacher1",
+            password: "123456",
+            role: "teacher",
+            subject: ["钢琴", "声乐"],
+            color: "#4361ee"
+          },
+          {
+            id: 2,
+            teacherId: 2,
+            name: "李老师",
+            username: "teacher2",
+            password: "123456",
+            role: "teacher",
+            subject: ["钢琴"],
+            color: "#3a0ca3"
+          },
+          {
+            id: 3,
+            teacherId: 3,
+            name: "王老师",
+            username: "teacher3",
+            password: "123456",
+            role: "teacher",
+            subject: ["声乐", "艺考"],
+            color: "#7209b7"
+          },
+          {
+            id: 4,
+            teacherId: 4,
+            name: "刘老师",
+            username: "teacher4",
+            password: "123456",
+            role: "teacher",
+            subject: ["675"],
+            color: "#4cc9f0"
+          },
+          {
+            id: 5,
+            teacherId: 5,
+            name: "赵老师",
+            username: "teacher5",
+            password: "123456",
+            role: "teacher",
+            subject: ["艺考"],
+            color: "#f72585"
+          },
+          {
+            id: 999,
+            teacherId: 999,
+            name: "系统管理员",
+            username: "admin",
+            password: "admin123",
+            role: "admin",
+            color: "#f72585"
+          }
+        ];
+        
+        // 标准教室数据
+        const standardRooms = [
+          {
+            "id": "1",
+            "name": "教室1",
+            "capacity": 30,
+            "equipment": ["投影仪", "电子白板"]
+          },
+          {
+            "id": "2",
+            "name": "教室2",
+            "capacity": 25,
+            "equipment": ["电子白板"]
+          },
+          {
+            "id": "3",
+            "name": "教室3",
+            "capacity": 20,
+            "equipment": ["投影仪", "电子白板", "音响系统"]
+          }
+        ];
+        
+        // 保存标准数据
+        localStorage.setItem('teachers', JSON.stringify(standardTeachers));
+        localStorage.setItem('rooms', JSON.stringify(standardRooms));
+        
+        // 重置课程数据
+        const schedulesData = localStorage.getItem('schedules');
+        if (schedulesData) {
+          try {
+            let schedules = JSON.parse(schedulesData);
+            if (Array.isArray(schedules)) {
+              log('保留现有课程数据');
+            } else {
+              log('课程数据格式错误，重置为空数组');
+              localStorage.setItem('schedules', JSON.stringify([]));
+            }
+          } catch (e) {
+            log('课程数据解析失败，重置为空数组');
+            localStorage.setItem('schedules', JSON.stringify([]));
+          }
+        } else {
+          log('无课程数据，设置为空数组');
+          localStorage.setItem('schedules', JSON.stringify([]));
+        }
+        
+        // 设置数据版本
+        localStorage.setItem('dataVersion', '1.0.2');
+        
+        // 清除当前用户会话
+        sessionStorage.removeItem('currentUser');
+        
+        log('数据修复完成！');
+      } catch (error) {
+        log(`修复失败: ${error.message}`);
+      }
+    });
+    
+    // 完全重置数据
+    document.getElementById('reset-data').addEventListener('click', function() {
+      if (confirm('警告：这将删除所有数据并恢复到初始状态。确定要继续吗？')) {
+        log('正在重置所有数据...');
+        
+        try {
+          localStorage.clear();
+          sessionStorage.clear();
+          log('所有数据已清除');
+          
+          // 设置数据版本防止自动初始化
+          localStorage.setItem('dataVersion', '1.0.2');
+          log('数据重置完成！');
+        } catch (error) {
+          log(`重置失败: ${error.message}`);
+        }
+      } else {
+        log('操作已取消');
+      }
+    });
+    
+    // 返回登录页面
+    document.getElementById('goto-login').addEventListener('click', function() {
+      log('正在跳转到登录页面...');
+      window.location.href = 'login.html';
+    });
+    
+    // 页面加载时
+    window.addEventListener('DOMContentLoaded', function() {
+      log('修复工具已加载，准备就绪');
+    });
+  </script>
+</body>
+</html> 

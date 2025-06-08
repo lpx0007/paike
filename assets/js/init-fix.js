@@ -2,6 +2,12 @@
  * 页面加载优化和数据一致性修复脚本
  */
 (function() {
+  // 防止重复执行
+  if (window.initFixExecuted) {
+    console.log('数据一致性修复已经执行过，跳过');
+    return;
+  }
+  
   console.log('正在执行数据一致性修复...');
   
   // 清除所有可能的计时器，防止页面不断刷新
@@ -13,6 +19,13 @@
   // 修复数据一致性问题
   function fixDataConsistency() {
     try {
+      // 检查是否已经修复过
+      const dataVersion = localStorage.getItem('dataVersion');
+      if (dataVersion === '1.0.2') {
+        console.log('数据已是最新版本，无需修复');
+        return true;
+      }
+      
       // 1. 读取现有数据
       const teachersData = localStorage.getItem('teachers');
       const roomsData = localStorage.getItem('rooms');
@@ -189,4 +202,9 @@
   
   // 执行数据修复
   fixDataConsistency();
+  
+  // 标记已执行
+  window.initFixExecuted = true;
+  
+  console.log('init-fix.js执行完成，版本1.0.2');
 })(); 

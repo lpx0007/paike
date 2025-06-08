@@ -197,5 +197,25 @@
   <script src="assets/js/auth.js?v=1.6"></script>
   <script src="assets/js/calendar.js?v=1.6"></script>
   <script src="assets/js/schedule.js?v=3.1"></script>
+  <script>
+    // 防止重复跳转的标记
+    if (!sessionStorage.getItem('redirectAttempted')) {
+      // 检查用户登录状态
+      const currentUser = sessionStorage.getItem('currentUser');
+      if (!currentUser) {
+        console.log('用户未登录，准备跳转到登录页面');
+        // 设置标记，防止循环跳转
+        sessionStorage.setItem('redirectAttempted', 'true');
+        // 使用超时，避免立即跳转造成的问题
+        setTimeout(function() {
+          window.location.href = 'login.html';
+        }, 1000);
+      } else {
+        console.log('用户已登录，无需跳转');
+      }
+    } else {
+      console.log('已尝试过跳转，不再重复跳转');
+    }
+  </script>
 </body>
 </html> 

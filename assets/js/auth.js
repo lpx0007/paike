@@ -193,18 +193,36 @@ class AuthManager {
       }
     } else {
       console.log('未检测到登录状态');
-      // 检查当前页面是否需要登录
-      const currentPath = window.location.pathname;
-      const allowedPaths = ['/login.html', '/index.html', '/', '/setup.html'];
-      const fileName = currentPath.split('/').pop();
       
-      // 如果当前页面不在允许的路径列表中且不是登录页面，则重定向到登录页面
-      if (!allowedPaths.includes(currentPath) && 
-          !allowedPaths.some(path => currentPath.endsWith(path)) && 
-          !fileName.includes('login.html') && 
-          !fileName.includes('setup.html')) {
+      // 防止无限重定向
+      if (sessionStorage.getItem('redirectCheck')) {
+        console.log('检测到可能的重定向循环，停止重定向');
+        return;
+      }
+      
+      // 获取当前页面路径
+      const currentPath = window.location.pathname;
+      const fileName = currentPath.split('/').pop() || '';
+      
+      // 检查是否在登录页面
+      const isLoginPage = fileName.includes('login.html') || fileName === 'login';
+      // 检查是否是首页
+      const isIndexPage = fileName === 'index.html' || fileName === '' || fileName === 'index';
+      // 检查是否是修复页面
+      const isFixPage = fileName.includes('fix') || fileName.includes('setup');
+      
+      console.log('当前页面:', fileName);
+      
+      // 如果不是登录页、首页或修复页，需要重定向到登录页
+      if (!isLoginPage && !isIndexPage && !isFixPage) {
         console.log('需要登录，准备重定向');
-        window.location.href = 'login.html';
+        sessionStorage.setItem('redirectCheck', 'true');
+        // 设置超时，避免立即触发可能导致的问题
+        setTimeout(() => {
+          window.location.href = 'login.html';
+        }, 100);
+      } else {
+        console.log('当前页面不需要重定向');
       }
     }
   }
@@ -231,7 +249,6 @@ class AuthManager {
     }
     
     console.log('尝试登录:', username);
-    console.log('当前教师数据:', this.teachers);
     
     // 查找用户
     const user = this.teachers.find(
@@ -249,21 +266,15 @@ class AuthManager {
       return;
     }
     
-    // 创建用于存储的用户对象，不包含密码
-    const userToStore = { ...user };
-    delete userToStore.password;
+    // 清除重定向标记
+    sessionStorage.removeItem('redirectCheck');
+    sessionStorage.removeItem('redirectAttempted');
     
-    // 确保有teacherId字段
-    if (!userToStore.teacherId) {
-      userToStore.teacherId = userToStore.id;
-    }
-    
-    // 保存用户信息到sessionStorage
-    sessionStorage.setItem('currentUser', JSON.stringify(userToStore));
-    this.currentUser = userToStore;
-    
-    // 显示登录成功消息
-    alert(`登录成功！欢迎您，${user.name}`);
+    // 登录成功
+    this.currentUser = { ...user };
+    // 不存储密码
+    delete this.currentUser.password;
+    sessionStorage.setItem('currentUser', JSON.stringify(this.currentUser));
     
     // 根据角色重定向
     if (user.role === 'admin') {

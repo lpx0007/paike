@@ -195,12 +195,15 @@
       }
     });
     
-    // 确保页面完全刷新，不使用缓存
-    window.addEventListener('pageshow', function(event) {
-      if (event.persisted) {
-        window.location.reload();
-      }
-    });
+    // 移除可能导致页面无限刷新的代码
+    // window.addEventListener('pageshow', function(event) {
+    //   if (event.persisted) {
+    //     window.location.reload();
+    //   }
+    // });
+    
+    // 打印调试信息
+    console.log('登录页面加载完成，版本1.7');
   </script>
 </body>
 </html> 
