@@ -313,14 +313,14 @@ class AdminManager {
       } catch (error) {
         console.error('加载默认数据失败:', error);
         // 使用备用数据
-        await Promise.all([
-          this.loadTeachers(),
-          this.loadRooms(),
-          this.loadSchedules()
-        ]);
-        
+      await Promise.all([
+        this.loadTeachers(),
+        this.loadRooms(),
+        this.loadSchedules()
+      ]);
+      
         // 保存数据到localStorage
-        this.saveData();
+      this.saveData();
       }
     }
     
@@ -2183,7 +2183,7 @@ class AdminManager {
           this.forceInitDefaultData();
           this.showToast('已恢复默认数据');
           // 刷新页面以显示新数据
-          setTimeout(() => {
+      setTimeout(() => {
             window.location.reload();
           }, 1500);
         }
