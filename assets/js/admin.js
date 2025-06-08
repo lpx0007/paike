@@ -4,20 +4,35 @@
  */
 class AdminManager {
   constructor() {
+    // 检查是否已经初始化过，防止重复创建实例
+    if (window.adminManagerInstance) {
+      console.log('AdminManager已经初始化，返回现有实例');
+      return window.adminManagerInstance;
+    }
+
     this.currentUser = null;
     this.teachers = [];
     this.rooms = [];
     this.schedules = [];
     this.currentSection = 'dashboard';
+    this.initialized = false;
+    this.initialRenderingDone = false;
+    this.dataLoaded = false;
     
-    this.init();
+    // 保存实例到全局变量
+    window.adminManagerInstance = this;
+    
+    // 使用requestAnimationFrame延迟初始化，避免与页面渲染冲突
+    requestAnimationFrame(() => {
+      this.init();
+    });
   }
   
   async init() {
     // 检查用户权限
     this.checkAdminPermission();
     
-    // 清除可能存在的缓存问题
+    // 只在初始化时清除缓存一次
     this.clearDataCache();
 
     // 加载数据
@@ -26,8 +41,11 @@ class AdminManager {
     // 设置事件监听
     this.setupEventListeners();
     
-    // 加载初始视图
+    // 加载初始视图 - 只在初始化时执行一次
     this.loadDashboard();
+    
+    // 标记为已初始化，防止重复初始化
+    this.initialized = true;
   }
   
   // 清除数据缓存，解决数据不一致问题
@@ -261,8 +279,8 @@ class AdminManager {
 
   // 处理页面首次加载时渲染教师列表
   setupInitialRendering() {
-    // 确保所有数据已加载
-    if (this.teachers.length > 0) {
+    // 确保所有数据已加载并且只执行一次
+    if (this.teachers.length > 0 && !this.initialRenderingDone) {
       console.log('开始渲染教师列表...');
       // 根据当前页面重新加载数据
       if (this.currentSection === 'dashboard') {
@@ -272,7 +290,10 @@ class AdminManager {
       } else if (this.currentSection === 'courses') {
         this.loadCoursesSection();
       }
-    } else {
+      
+      // 标记为已完成初始渲染
+      this.initialRenderingDone = true;
+    } else if (this.teachers.length === 0) {
       console.warn('教师数据为空，无法渲染列表');
     }
   }
@@ -299,6 +320,12 @@ class AdminManager {
   async loadData() {
     console.log('开始加载数据...');
     
+    // 如果已经加载过数据，不重复加载
+    if (this.teachers.length > 0 && this.rooms.length > 0 && this.schedules.length > 0) {
+      console.log('数据已加载，跳过重复加载');
+      return;
+    }
+    
     // 尝试从localStorage加载数据
     const loadedFromStorage = this.loadDataFromStorage();
     
@@ -312,15 +339,15 @@ class AdminManager {
         this.forceInitDefaultData();
       } catch (error) {
         console.error('加载默认数据失败:', error);
-        // 使用备用数据
-      await Promise.all([
-        this.loadTeachers(),
-        this.loadRooms(),
-        this.loadSchedules()
-      ]);
+        // 使用备用数据，一次性加载所有数据
+        await Promise.all([
+          this.loadTeachers(),
+          this.loadRooms(),
+          this.loadSchedules()
+        ]);
       
         // 保存数据到localStorage
-      this.saveData();
+        this.saveData();
       }
     }
     
@@ -329,12 +356,10 @@ class AdminManager {
     console.log(`已加载 ${this.rooms.length} 间教室数据`);
     console.log(`已加载 ${this.schedules.length} 条课程数据`);
     
-    console.log('所有数据已成功加载到localStorage');
+    console.log('所有数据已成功加载');
     
-    // 确保在页面加载后初始化渲染
-    setTimeout(() => {
-      this.setupInitialRendering();
-    }, 100);
+    // 直接调用初始化渲染，不使用setTimeout
+    this.setupInitialRendering();
   }
 
   async loadTeachersFromServer() {
@@ -2648,9 +2673,8 @@ class AdminManager {
     try {
       // 确保数据已加载
       if (!this.teachers.length || !this.rooms.length) {
-        console.warn('数据可能未完全加载，尝试重新加载...');
-        this.loadData();
-        setTimeout(() => this.exportTeacherScheduleAsCSV(teacherId), 500);
+        console.warn('数据未完全加载，无法导出');
+        this.showToast('数据未完全加载，请稍后再试');
         return;
       }
 

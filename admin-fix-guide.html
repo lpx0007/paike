@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>管理后台修复指南</title>
+  <style>
+    body {
+      font-family: "Microsoft YaHei", sans-serif;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      color: #333;
+    }
+    h1, h2 {
+      color: #3a0ca3;
+    }
+    .container {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    code {
+      background-color: #f0f0f0;
+      padding: 2px 5px;
+      border-radius: 3px;
+      font-family: Consolas, monospace;
+    }
+    pre {
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    .step {
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #eee;
+    }
+    .note {
+      background-color: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 10px 15px;
+      margin: 15px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>排课系统管理后台修复指南</h1>
+    
+    <p>本文档说明了管理后台无法打开的问题修复方法。</p>
+    
+    <h2>问题原因</h2>
+    <p>我们发现管理后台无法打开的主要原因是：</p>
+    <ol>
+      <li><code>init-fix.js</code>脚本中的<code>window.stop()</code>方法阻止了后续脚本的加载和执行</li>
+      <li>脚本加载顺序不合理，影响了页面正常初始化</li>
+    </ol>
+    
+    <h2>修复方案</h2>
+    
+    <div class="step">
+      <h3>步骤1：修改 init-fix.js</h3>
+      <p>移除了阻止页面加载的<code>window.stop()</code>方法</p>
+      <pre><code>// 移除了以下代码
+// if (window.stop) {
+//   window.stop();
+// }</code></pre>
+    </div>
+    
+    <div class="step">
+      <h3>步骤2：调整脚本加载顺序</h3>
+      <p>将<code>init-fix.js</code>移到页面底部，确保它在其他关键脚本加载完成后执行</p>
+      <pre><code>&lt;!-- 在body结束标签前加载修复脚本 --&gt;
+&lt;script src="assets/js/init-fix.js?v=1.0.1"&gt;&lt;/script&gt;</code></pre>
+    </div>
+    
+    <div class="step">
+      <h3>步骤3：更新脚本版本号</h3>
+      <p>确保所有页面使用最新版本的JS文件:</p>
+      <pre><code>&lt;script src="assets/js/auth.js?v=1.6"&gt;&lt;/script&gt;
+&lt;script src="assets/js/admin.js?v=1.6"&gt;&lt;/script&gt;</code></pre>
+    </div>
+    
+    <h2>如何验证修复是否成功</h2>
+    <ol>
+      <li>清除浏览器缓存（按Ctrl+F5或Cmd+Shift+R）</li>
+      <li>访问登录页面 <code>login.html</code></li>
+      <li>使用管理员账号登录：用户名 <code>admin</code>，密码 <code>admin123</code></li>
+      <li>确认能否正常进入管理后台并看到仪表盘</li>
+    </ol>
+    
+    <div class="note">
+      <p><strong>注意：</strong>如果修复后仍然无法访问管理后台，可以尝试使用登录页面上的"重置数据"按钮，然后重新登录。</p>
+    </div>
+  </div>
+</body>
+</html> 

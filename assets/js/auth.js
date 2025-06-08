@@ -53,8 +53,15 @@ class AuthManager {
       // 尝试从服务器加载数据
       const response = await fetch('data/teachers.json');
       if (response.ok) {
-        this.teachers = await response.json();
+        const teachersData = await response.json();
         console.log('从服务器加载了教师数据');
+        
+        // 验证数据格式正确性
+        if (Array.isArray(teachersData) && teachersData.length > 0) {
+          this.teachers = teachersData;
+        } else {
+          throw new Error('教师数据格式不正确');
+        }
       } else {
         throw new Error('无法加载教师数据');
       }
@@ -124,8 +131,25 @@ class AuthManager {
       ];
     }
     
+    // 保存到localStorage前确保数据格式一致
+    const sanitizedData = this.teachers.map(teacher => {
+      // 确保所有教师数据格式一致
+      return {
+        id: teacher.id,
+        teacherId: teacher.teacherId || teacher.id,
+        name: teacher.name,
+        username: teacher.username,
+        password: teacher.password,
+        role: teacher.role || "teacher",
+        subject: Array.isArray(teacher.subject) ? teacher.subject : (teacher.subject ? [teacher.subject] : []),
+        color: teacher.color || "#4361ee"
+      };
+    });
+    
+    this.teachers = sanitizedData;
     // 保存到localStorage
     localStorage.setItem('teachers', JSON.stringify(this.teachers));
+    console.log('已保存标准化的教师数据到localStorage');
     
     // 确保管理员账号存在
     this.ensureAdminAccount();
