@@ -1,0 +1,49 @@
+[
+  {
+    "id": 1,
+    "username": "admin",
+    "password": "admin123",
+    "role": "admin",
+    "name": "系统管理员"
+  },
+  {
+    "id": 2,
+    "username": "teacher1",
+    "password": "teacher123",
+    "role": "teacher",
+    "teacherId": 1,
+    "name": "张老师"
+  },
+  {
+    "id": 3,
+    "username": "teacher2",
+    "password": "teacher123",
+    "role": "teacher",
+    "teacherId": 2,
+    "name": "李老师"
+  },
+  {
+    "id": 4,
+    "username": "teacher3",
+    "password": "teacher123",
+    "role": "teacher",
+    "teacherId": 3,
+    "name": "王老师"
+  },
+  {
+    "id": 5,
+    "username": "teacher4",
+    "password": "teacher123",
+    "role": "teacher",
+    "teacherId": 4,
+    "name": "刘老师"
+  },
+  {
+    "id": 6,
+    "username": "teacher5",
+    "password": "teacher123",
+    "role": "teacher",
+    "teacherId": 5,
+    "name": "陈老师"
+  }
+] 

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>课程排期</title>
+  <link rel="stylesheet" href="assets/css/normalize.css">
+  <link rel="stylesheet" href="assets/css/main.css?v=2.2">
+  <style>
+    /* 当前教师列样式 */
+    .current-teacher {
+      background-color: rgba(76, 201, 240, 0.3) !important;
+      position: relative;
+      font-weight: bold;
+    }
+    
+    .current-teacher-column {
+      background-color: rgba(76, 201, 240, 0.1) !important;
+    }
+    
+    .current-teacher-hint {
+      font-size: 0.8em;
+      margin-left: 5px;
+      color: #3a0ca3;
+    }
+    
+    /* 课程创建提示 */
+    .schedule-tip {
+      font-size: 14px;
+      color: #666;
+      margin-top: 5px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <a href="login.html" class="back-button">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M19 12H5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12 19L5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+    <div class="title">排课系统</div>
+    <div class="user-info">
+      <span class="username">未知老师</span>
+      <div class="avatar">?</div>
+    </div>
+  </header>
+  
+  <div class="calendar-section">
+    <div class="calendar-header">
+      <button id="prev-month" class="month-nav-button">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <h2 class="section-title">日历框（月度）</h2>
+      <button id="next-month" class="month-nav-button">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+    <div class="month-mini-calendar" id="mini-calendar">
+      <!-- 这里将由JS动态生成月度日历 -->
+    </div>
+  </div>
+  
+  <div class="schedule-title">
+    <h2>每日排课表</h2>
+    <p class="schedule-tip">提示：您可以在任何位置长按创建课程，蓝色区域为您的教师专栏</p>
+  </div>
+  
+  <div id="schedule-container">
+    <!-- 日视图 -->
+    <div id="day-view" class="view-container active">
+      <div class="time-schedule">
+        <!-- 表头行 -->
+        <div class="header-row">
+          <div class="time-header-cell">时间</div>
+          <div class="teachers-header-row">
+            <div class="teacher-header">杨小菲</div>
+            <div class="teacher-header">李老师</div>
+            <div class="teacher-header">王老师</div>
+            <div class="teacher-header">刘老师</div>
+            <div class="teacher-header">赵老师</div>
+          </div>
+        </div>
+        
+        <!-- 内容区域 -->
+        <div class="content-area">
+          <div class="time-column">
+            <div class="time-slots-container" id="time-slots">
+              <!-- 由JS生成时间格子 -->
+            </div>
+          </div>
+          <div class="teachers-columns">
+            <div class="teacher-column" data-teacher-id="1">
+              <div class="teacher-slots">
+                <!-- 由JS生成课程内容 -->
+              </div>
+            </div>
+            <div class="teacher-column" data-teacher-id="2">
+              <div class="teacher-slots">
+                <!-- 由JS生成课程内容 -->
+              </div>
+            </div>
+            <div class="teacher-column" data-teacher-id="3">
+              <div class="teacher-slots">
+                <!-- 由JS生成课程内容 -->
+              </div>
+            </div>
+            <div class="teacher-column" data-teacher-id="4">
+              <div class="teacher-slots">
+                <!-- 由JS生成课程内容 -->
+              </div>
+            </div>
+            <div class="teacher-column" data-teacher-id="5">
+              <div class="teacher-slots">
+                <!-- 由JS生成课程内容 -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="action-bar">
+    <button id="filter" class="action-button">统计</button>
+    <button id="view-rooms" class="action-button">我的</button>
+  </div>
+  
+  <button id="add-course" class="fab">+</button>
+  
+  <!-- 创建课程的弹出层 -->
+  <div id="course-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>创建新课程</h3>
+        <button class="close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="course-form">
+          <div class="form-group">
+            <label for="course-name">课程名称</label>
+            <input type="text" id="course-name" required>
+          </div>
+          <div class="form-group">
+            <label for="course-teacher">教师</label>
+            <select id="course-teacher" required>
+              <!-- 由JS动态填充教师选项 -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="course-date">日期</label>
+            <input type="date" id="course-date" required>
+          </div>
+          <div class="form-group">
+            <label for="course-start">开始时间</label>
+            <input type="time" id="course-start" step="1800" required>
+          </div>
+          <div class="form-group">
+            <label for="course-end">结束时间</label>
+            <input type="time" id="course-end" step="1800" required>
+          </div>
+          <div class="form-group">
+            <label for="course-room">教室</label>
+            <select id="course-room" required>
+              <!-- 由JS动态填充教室选项 -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="course-students">学生</label>
+            <textarea id="course-students" placeholder="请输入学生姓名，多个学生用逗号分隔"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="course-color">颜色</label>
+            <div class="color-picker">
+              <div class="color-option" data-color="#4cc9f0"></div>
+              <div class="color-option" data-color="#4361ee"></div>
+              <div class="color-option" data-color="#3a0ca3"></div>
+              <div class="color-option" data-color="#7209b7"></div>
+              <div class="color-option" data-color="#f72585"></div>
+            </div>
+          </div>
+          <button type="submit" class="btn-submit">保存</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/auth.js?v=1.6"></script>
+  <script src="assets/js/calendar.js?v=1.6"></script>
+  <script src="assets/js/schedule.js?v=3.1"></script>
+</body>
+</html> 

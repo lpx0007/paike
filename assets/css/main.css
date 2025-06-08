@@ -1,0 +1,1560 @@
+:root {
+  /* 色彩系统 - 更新为现代女性喜欢的色系 */
+  --primary: #e491a9; /* 柔和粉红色 */
+  --secondary: #9f86c0; /* 淡紫色 */
+  --accent: #5cbdb9; /* 蒂芙尼蓝绿色 */
+  --background: #fdfaf6; /* 温暖米色背景 */
+  --surface: #ffffff; /* 纯白表面 */
+  --text-primary: #33272a; /* 深棕色文字 */
+  --text-secondary: #8e7f85; /* 柔和灰褐色次要文字 */
+  
+  /* 间距 */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  
+  /* 圆角 */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  
+  /* 阴影 */
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 8px rgba(0,0,0,0.1);
+  --shadow-lg: 0 8px 16px rgba(0,0,0,0.1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--background);
+  color: var(--text-primary);
+  margin: 0;
+  padding: 0;
+}
+
+/* 通用样式 */
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+  font-weight: 600;
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+/* 按钮样式 */
+.btn, .btn-submit {
+  display: inline-block;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.1s;
+  border: none;
+  background-color: var(--primary);
+  color: white;
+}
+
+.btn:hover, .btn-submit:hover {
+  opacity: 0.9;
+}
+
+.btn:active, .btn-submit:active {
+  transform: translateY(1px);
+}
+
+.icon-button {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.icon-button:hover {
+  background-color: rgba(0,0,0,0.05);
+}
+
+/* 表单样式 */
+.form-group {
+  margin-bottom: var(--spacing-sm);
+  position: relative;
+  z-index: 1;
+}
+
+label {
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="date"],
+input[type="time"],
+input[type="tel"],
+input[type="email"],
+textarea,
+select {
+  width: 100%;
+  padding: 10px var(--spacing-sm);
+  border: 1px solid #e0e0e0;
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  color: var(--text-primary);
+  background-color: white;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  position: relative;
+  z-index: 10;
+}
+
+/* 修复下拉菜单样式 */
+select {
+  appearance: auto !important;
+  -webkit-appearance: auto !important;
+  -moz-appearance: auto !important;
+  padding-right: 25px;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 12px;
+}
+
+select option {
+  padding: 8px;
+  background-color: white;
+  color: var(--text-primary);
+  font-size: 16px;
+}
+
+/* 修复下拉选择框覆盖问题 */
+.modal-content select {
+  z-index: 100;
+}
+
+.modal-content select option {
+  z-index: 101;
+  background-color: white;
+  color: var(--text-primary);
+}
+
+/* textarea样式 */
+textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* 表单元素聚焦状态 */
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(228, 145, 169, 0.2); /* 粉红色阴影 */
+}
+
+/* 应用头部 */
+.app-header {
+  display: grid;
+  grid-template-columns: 40px 1fr 90px; /* 三列布局：返回按钮、标题、用户信息 */
+  align-items: center;
+  padding: 0 var(--spacing-sm);
+  background-color: var(--surface);
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 48px;
+}
+
+.app-header .back-button {
+  grid-column: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  text-decoration: none;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.app-header .title {
+  grid-column: 2;
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--primary);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.app-header .user-info {
+  grid-column: 3;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  overflow: hidden;
+}
+
+.app-header .username {
+  font-weight: 500;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 50px;
+}
+
+.app-header .avatar,
+.app-header .avatar-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.app-header .avatar-circle {
+  color: white;
+  font-weight: bold;
+  background-color: var(--primary);
+}
+
+/* 选项卡 */
+.tabs {
+  display: flex;
+  background-color: var(--surface);
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tab {
+  padding: var(--spacing-md);
+  white-space: nowrap;
+  color: var(--text-secondary);
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.3s;
+}
+
+.tab.active {
+  color: var(--primary); /* 粉红色激活状态 */
+  font-weight: 500;
+}
+
+.tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--primary); /* 粉红色下划线 */
+}
+
+/* 日程视图容器 */
+#schedule-container {
+  height: calc(100vh - 150px);
+  overflow-y: auto;
+  padding: 0 var(--spacing-md);
+  margin-bottom: 50px;
+  overflow-x: hidden;
+}
+
+/* 视图容器 */
+.view-container {
+  display: none;
+  width: 100%;
+  height: 100%;
+}
+
+.view-container.active {
+  display: block;
+}
+
+/* 新的日视图布局 */
+.time-schedule {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow-y: hidden;
+}
+
+/* 表头固定行 */
+.header-row {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: max-content;
+  min-width: 100%;
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+/* 教师表头行 */
+.teachers-header-row {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(120px, 1fr));
+  background-color: #4cc9f0;
+  width: max-content;
+  min-width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  cursor: grab;
+  touch-action: pan-x;
+  will-change: transform;
+  transition: transform 0.1s ease-out;
+}
+
+.teachers-header-row:active {
+  cursor: grabbing;
+}
+
+/* 各个表头单元格 */
+.time-header-cell, .teacher-header {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.time-header-cell {
+  width: 60px;
+  padding: 10px;
+  font-weight: 600;
+  background-color: var(--accent); /* 使用新的蒂芙尼蓝绿色 */
+  color: white;
+  position: sticky;
+  left: 0;
+  z-index: 110;
+}
+
+.teacher-header {
+  cursor: pointer;
+  padding: 10px 5px;
+  text-align: center;
+  font-weight: 600;
+  background-color: var(--primary); /* 使用新的柔和粉红色 */
+  color: white;
+  flex: 1;
+  transition: background-color 0.2s;
+  border-right: 1px solid rgba(255,255,255,0.2);
+  position: relative;
+}
+
+.teacher-header:hover {
+  background-color: #d480a0; /* 粉红色的暗色调 */
+}
+
+.teacher-header:active {
+  background-color: #c36f90; /* 粉红色的更暗色调 */
+}
+
+/* 时间槽容器 */
+.time-slots-container {
+  position: relative;
+}
+
+/* 时间格子 */
+.time-slot {
+  height: 60px;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  display: flex;
+  align-items: flex-start;
+  padding: 2px 0 0 5px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  position: relative;
+}
+
+/* 教师列内容区域 */
+.teacher-slots {
+  position: relative;
+}
+
+/* 教师列布局 */
+.teachers-columns {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(120px, 1fr));
+  width: max-content;
+  min-width: 100%;
+}
+
+.teacher-column {
+  position: relative;
+  border-right: 1px solid rgba(0,0,0,0.05);
+}
+
+/* 给活跃的教师列添加指示器 */
+.teacher-column:target,
+.teacher-header:target {
+  animation: highlight-column 2s ease-out;
+}
+
+@keyframes highlight-column {
+  0% { background-color: rgba(228, 145, 169, 0.3); } /* 粉红色高亮 */
+  100% { background-color: transparent; }
+}
+
+/* 时间轴样式优化 */
+.time-axis {
+  border-right: 1px solid rgba(0,0,0,0.1);
+  background-color: var(--surface);
+  height: calc(28 * 60px);
+  overflow-y: hidden;
+  position: sticky;
+  left: 0;
+  z-index: 10;
+}
+
+/* 添加辅助线，确保时间显示在横线下方 */
+.time-slot::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: rgba(0,0,0,0.1);
+  z-index: 5;
+}
+
+/* 添加时间点的绝对定位版本 */
+.time-axis .time-marker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  font-size: 12px;
+  padding: 2px 5px;
+  color: var(--text-secondary);
+}
+
+/* 时间格子样式优化 */
+.time-cell {
+  height: 60px;
+  border-bottom: 1px dashed rgba(0,0,0,0.05);
+  border-right: 1px solid rgba(0,0,0,0.05);
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.time-cell:hover {
+  background-color: rgba(228, 145, 169, 0.1); /* 使用粉红色的透明版本 */
+}
+
+.time-cell.selected {
+  background-color: rgba(159, 134, 192, 0.2); /* 使用紫色的透明版本 */
+  box-shadow: inset 0 0 0 2px var(--secondary);
+}
+
+/* 课程项样式优化 */
+.course-item {
+  position: absolute;
+  left: 5px;
+  right: 5px;
+  border-radius: var(--radius-md); /* 增加圆角 */
+  padding: var(--spacing-sm);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08); /* 柔和阴影 */
+  overflow: hidden;
+  z-index: 5;
+}
+
+.course-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12); /* 悬停时更明显的阴影 */
+  z-index: 10;
+}
+
+.course-title {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.course-time, .course-room {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+/* 周视图样式 */
+.week-view {
+  width: 100%;
+  position: relative;
+}
+
+.week-header {
+  display: flex;
+  background-color: var(--surface);
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.week-time-header {
+  width: 60px;
+  padding: var(--spacing-sm);
+  text-align: center;
+  font-weight: 500;
+  color: var(--text-secondary);
+  border-right: 1px solid rgba(0,0,0,0.1);
+}
+
+.week-day-header {
+  flex: 1;
+  padding: var(--spacing-sm);
+  text-align: center;
+  border-right: 1px solid rgba(0,0,0,0.05);
+}
+
+.week-day-name {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.week-day-date {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.week-time-row {
+  display: flex;
+  height: 60px;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.week-time-cell {
+  width: 60px;
+  padding: var(--spacing-sm);
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 12px;
+  border-right: 1px solid rgba(0,0,0,0.1);
+  background-color: var(--surface);
+}
+
+.week-day-cell {
+  flex: 1;
+  border-right: 1px solid rgba(0,0,0,0.05);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.week-day-cell:hover {
+  background-color: rgba(228, 145, 169, 0.1); /* 使用粉红色的透明版本 */
+}
+
+.week-day-cell.selected {
+  background-color: rgba(159, 134, 192, 0.2); /* 使用紫色的透明版本 */
+  box-shadow: inset 0 0 0 2px var(--secondary);
+}
+
+.week-course-item {
+  position: absolute;
+  border-radius: var(--radius-md); /* 增加圆角 */
+  padding: var(--spacing-sm);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08); /* 柔和阴影 */
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  z-index: 5;
+}
+
+.week-course-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12); /* 悬停时更明显的阴影 */
+  z-index: 6;
+}
+
+/* 月视图样式 */
+.month-view {
+  width: 100%;
+}
+
+.month-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background-color: var(--surface);
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.month-day-header {
+  padding: var(--spacing-md);
+  text-align: center;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+  gap: 1px;
+  background-color: rgba(0,0,0,0.05);
+  border: 1px solid rgba(0,0,0,0.05);
+  height: calc(100vh - 300px);
+}
+
+.month-day-cell {
+  background-color: var(--surface);
+  padding: var(--spacing-sm);
+  min-height: 100px;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.month-day-cell:hover {
+  background-color: rgba(228, 145, 169, 0.1); /* 使用粉红色的透明版本 */
+}
+
+.month-day-cell.selected {
+  box-shadow: inset 0 0 0 2px var(--secondary);
+}
+
+.month-day-prev,
+.month-day-next {
+  background-color: rgba(0,0,0,0.02);
+}
+
+.month-day-today {
+  background-color: rgba(159, 134, 192, 0.1); /* 使用紫色的透明版本 */
+}
+
+.month-day-number {
+  font-weight: 500;
+  margin-bottom: var(--spacing-sm);
+  text-align: right;
+}
+
+.month-day-courses {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.month-day-course {
+  padding: 4px 6px; /* 增加内边距 */
+  font-size: 12px;
+  color: white;
+  border-radius: 4px; /* 增加圆角 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05); /* 添加轻微阴影 */
+}
+
+.month-day-more {
+  padding: 2px 4px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: center;
+  cursor: pointer;
+}
+
+.month-day-more:hover {
+  text-decoration: underline;
+}
+
+/* 动作栏 */
+.action-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  padding: var(--spacing-md);
+  background-color: var(--surface);
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+  z-index: 90;
+}
+
+.action-button {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.fab {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: var(--primary); /* 使用主色调 */
+  color: white;
+  font-size: 24px;
+  border: none;
+  box-shadow: var(--shadow-md);
+  position: fixed;
+  bottom: var(--spacing-xl);
+  right: var(--spacing-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  z-index: 100;
+}
+
+.fab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px rgba(228, 145, 169, 0.25); /* 粉红色阴影 */
+}
+
+/* 弹窗 */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 100;
+}
+
+.modal-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--surface);
+  border-top-left-radius: var(--radius-lg);
+  border-top-right-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  transform: translateY(0);
+  transition: transform 0.3s;
+  max-height: 90vh;
+  overflow-y: auto;
+  z-index: 101;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.modal-header h3 {
+  margin: 0;
+}
+
+.close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+
+/* 颜色选择器 */
+.color-picker {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.color-option {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.2s;
+}
+
+.color-option:hover {
+  transform: scale(1.1);
+}
+
+.color-option.selected {
+  border-color: white;
+  box-shadow: 0 0 0 2px var(--primary); /* 粉红色阴影 */
+}
+
+/* 登录页面 */
+.login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: var(--background);
+}
+
+.login-container {
+  width: 100%;
+  max-width: 400px;
+  background-color: var(--surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: var(--spacing-xl);
+  margin: var(--spacing-md);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+.login-header h1 {
+  color: var(--primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.login-header p {
+  color: var(--text-secondary);
+}
+
+.role-options {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-xs);
+}
+
+.role-option {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-md);
+  border: 1px solid #e0e0e0;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.role-option input {
+  margin-bottom: var(--spacing-sm);
+}
+
+.role-option:hover {
+  border-color: var(--primary);
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  margin: var(--spacing-md) 0;
+}
+
+.remember-me input {
+  margin-right: var(--spacing-sm);
+}
+
+.login-footer {
+  margin-top: var(--spacing-xl);
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+/* 课程详情弹窗 */
+.modal-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+}
+
+.btn-edit, .btn-delete {
+  flex: 1;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-sm);
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.btn-edit {
+  background-color: var(--secondary); /* 紫色按钮 */
+  margin-right: var(--spacing-sm);
+}
+
+.btn-delete {
+  background-color: #e74c3c; /* 保持删除按钮为红色 */
+}
+
+/* 教室使用情况 */
+.room-usage {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.room-item {
+  background-color: var(--surface);
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-md);
+}
+
+.room-item h4 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-sm);
+  color: var(--primary);
+}
+
+.room-item p {
+  margin: var(--spacing-xs) 0;
+  font-size: 14px;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .schedule-content {
+    grid-template-columns: 50px 1fr;
+  }
+  
+  .tab {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+  
+  .modal-content {
+    padding: var(--spacing-md);
+  }
+  
+  .fab {
+    width: 50px;
+    height: 50px;
+    bottom: calc(var(--spacing-xl) + 42px);
+  }
+  
+  .week-time-header,
+  .week-time-cell {
+    width: 50px;
+  }
+  
+  .month-grid {
+    height: calc(100vh - 250px);
+  }
+  
+  .month-day-cell {
+    min-height: 80px;
+  }
+  
+  .room-usage {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.fadeIn {
+  animation: fadeIn 0.3s forwards;
+}
+
+.slideUp {
+  animation: slideUp 0.3s forwards;
+}
+
+/* Toast提示 */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%) translateY(100px);
+  background-color: var(--secondary); /* 紫色背景 */
+  color: white;
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  transition: transform 0.3s, opacity 0.3s;
+  z-index: 1000;
+}
+
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* 每日排课表标题行固定 */
+.schedule-title {
+  text-align: center;
+  margin: 10px 0;
+  position: sticky;
+  top: 0;
+  background-color: var(--surface);
+  z-index: 15;
+}
+
+/* 日视图表头固定 */
+#day-view .time-schedule {
+  position: relative;
+}
+
+#day-view .schedule-content {
+  overflow: visible;
+}
+
+/* 月度日历样式 */
+.calendar-section {
+  background-color: var(--surface);
+  padding: var(--spacing-md) var(--spacing-md) var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-sm);
+}
+
+.section-title {
+  color: var(--primary);
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: var(--spacing-md);
+  font-size: 18px;
+}
+
+.month-mini-calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  margin-bottom: var(--spacing-md);
+}
+
+.mini-calendar-header {
+  text-align: center;
+  color: var(--text-secondary);
+  font-weight: 500;
+  padding: var(--spacing-xs);
+  background-color: var(--background);
+  width: 100%;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mini-calendar-day {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  cursor: pointer;
+  margin: 0 auto;
+}
+
+.day-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+
+.mini-calendar-day.today .day-number {
+  background-color: rgba(159, 134, 192, 0.2); /* 紫色背景 */
+}
+
+.mini-calendar-day.selected .day-number {
+  background-color: var(--primary); /* 粉红色背景 */
+  color: white;
+}
+
+.mini-calendar-day.other-month .day-number {
+  color: var(--text-secondary);
+  opacity: 0.5;
+}
+
+.mini-calendar-day:hover .day-number {
+  background-color: rgba(228, 145, 169, 0.2); /* 粉红色的透明版本 */
+}
+
+.schedule-title h2 {
+  color: var(--primary);
+  font-size: 18px;
+  margin: 0;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.schedule-tip {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin: 5px 0 10px;
+  text-align: center;
+  font-style: italic;
+  background-color: rgba(228, 145, 169, 0.1); /* 粉红色背景 */
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+/* 内容区域 */
+.content-area {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: auto;
+  height: calc(100vh - 220px);
+  position: relative;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* 时间列固定 */
+.time-column {
+  position: sticky;
+  left: 0;
+  z-index: 15;
+  background-color: var(--surface);
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+  border-right: 1px solid rgba(0,0,0,0.1);
+}
+
+/* 返回按钮 */
+.back-button {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: transparent;
+  border: none;
+  color: var(--primary); /* 粉红色返回按钮 */
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.back-button:hover {
+  text-decoration: underline;
+}
+
+/* 月份导航 */
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.month-nav-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--surface);
+  border: 1px solid rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  color: var(--text-primary);
+}
+
+.month-nav-button:hover {
+  background-color: rgba(228, 145, 169, 0.1); /* 粉红色的透明版本 */
+}
+
+.section-title {
+  color: var(--primary);
+  text-align: center;
+  margin: 0;
+  font-size: 18px;
+}
+
+/* 添加滚动指示器，仅在有超出内容时显示 */
+.content-area::-webkit-scrollbar {
+  height: 4px;
+  width: 4px;
+}
+
+.content-area::-webkit-scrollbar-thumb {
+  background-color: rgba(228, 145, 169, 0.5); /* 粉红色滚动条 */
+  border-radius: 4px;
+}
+
+.content-area::-webkit-scrollbar-track {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.teacher-column.highlight,
+.teacher-header.highlight {
+  background-color: rgba(228, 145, 169, 0.25); /* 粉红色高亮 */
+  transition: background-color 0.3s ease-out;
+}
+
+/* 课程统计样式 */
+.stats-section {
+  padding: var(--spacing-md);
+}
+
+.stats-section h4 {
+  font-size: 16px;
+  margin: var(--spacing-md) 0 var(--spacing-sm);
+  color: var(--text-primary);
+}
+
+/* 时间范围选择标签 */
+.time-range-tabs {
+  display: flex;
+  margin-bottom: var(--spacing-md);
+  background-color: #f5f5f5;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  padding: 2px;
+}
+
+.time-range-tab {
+  flex: 1;
+  padding: 8px 0;
+  text-align: center;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text-secondary);
+  font-size: 14px;
+  border-radius: var(--radius-sm);
+}
+
+.time-range-tab:hover {
+  background-color: rgba(228, 145, 169, 0.1);
+}
+
+.time-range-tab.active {
+  background-color: var(--primary);
+  color: white;
+  font-weight: 500;
+}
+
+/* 统计卡片区域 */
+.stats-overview {
+  display: flex;
+  gap: 10px;
+  margin-bottom: var(--spacing-md);
+}
+
+.stats-card {
+  flex: 1;
+  background-color: var(--surface);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  text-align: center;
+  border-left: 3px solid var(--primary);
+  height: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.stats-number {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 4px;
+}
+
+.stats-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* 课程类型统计列表 */
+.stats-list {
+  margin: var(--spacing-sm) 0;
+  background-color: var(--surface);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.stats-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px var(--spacing-md);
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.stats-item:last-child {
+  border-bottom: none;
+}
+
+.stats-detail {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+.stats-hours {
+  color: var(--text-primary);
+  font-weight: 500;
+  min-width: 55px;
+  text-align: right;
+}
+
+.stats-divider, .stats-equals {
+  color: var(--text-secondary);
+  margin: 0 5px;
+}
+
+.stats-rate {
+  color: var(--text-primary);
+  min-width: 70px;
+  text-align: right;
+}
+
+.stats-value {
+  font-weight: 500;
+  color: var(--accent);
+  min-width: 60px;
+  text-align: right;
+  margin-left: 5px;
+}
+
+/* 课时费设置 */
+.course-rates-container {
+  margin: var(--spacing-sm) 0;
+  background-color: var(--surface);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.course-rate-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.course-rate-item:last-child {
+  border-bottom: none;
+}
+
+.course-rate-name {
+  font-weight: 500;
+  color: var(--text-primary);
+  font-size: 14px;
+  width: 60px;
+}
+
+.course-rate-input {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+}
+
+.rate-input {
+  width: 60px;
+  text-align: right;
+  padding: 6px 8px;
+  font-size: 14px;
+}
+
+.course-rates-container .btn-submit {
+  display: block;
+  margin: var(--spacing-md) auto 0;
+  width: 100%;
+  max-width: 200px;
+  padding: 10px;
+  font-size: 14px;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+/* 个人中心样式 */
+.profile-section {
+  padding: 0;
+}
+
+.profile-avatar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
+  padding: var(--spacing-sm) 0;
+  background-color: var(--background);
+  border-radius: var(--radius-sm);
+}
+
+.avatar-circle {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  color: white;
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--spacing-sm);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+}
+
+.btn-change-avatar {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 3px 6px;
+  transition: all 0.2s;
+}
+
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-sm);
+}
+
+.avatar-option {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  color: white;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin: 0 auto;
+  border: 2px solid transparent;
+}
+
+.avatar-option:hover {
+  transform: scale(1.1);
+}
+
+.avatar-option.selected {
+  border: 2px solid white;
+  box-shadow: 0 0 0 2px var(--primary);
+}
+
+.btn-close-avatar-selection {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.btn-close-avatar-selection:hover {
+  background-color: #d480a0; /* 粉红色的暗色调 */
+}
+
+/* 表单部分 */
+.form-section {
+  background-color: var(--surface);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-section h4 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-sm);
+  padding-bottom: var(--spacing-xs);
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  color: var(--primary);
+  font-size: 15px;
+}
+
+.form-section + .form-section {
+  margin-top: var(--spacing-sm);
+}
+
+#profile-form .btn-submit {
+  margin-top: var(--spacing-md);
+  width: 100%;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-md);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+#profile-form .btn-submit:hover {
+  background-color: #d480a0; /* 粉红色的暗色调 */
+}
+
+.btn-change-avatar:hover {
+  color: var(--secondary);
+  transform: scale(1.05);
+}
+
+/* 头像选择容器 */
+.avatar-selection-container {
+  background-color: var(--surface);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+  box-shadow: var(--shadow-md);
+  text-align: center;
+}
+
+.avatar-selection-container h4 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-sm);
+  color: var(--text-primary);
+  font-size: 15px;
+} 

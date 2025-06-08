@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>排课系统管理后台(调试版)</title>
+  <link rel="stylesheet" href="assets/css/normalize.css">
+  <link rel="stylesheet" href="assets/css/main.css?v=2.3">
+  <link rel="stylesheet" href="assets/css/admin.css?v=1.2">
+  <style>
+    /* 调试样式 */
+    .debug-panel {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.7);
+      color: #fff;
+      padding: 10px;
+      border-radius: 5px;
+      z-index: 9999;
+      max-width: 300px;
+      max-height: 200px;
+      overflow: auto;
+      font-size: 12px;
+    }
+    
+    /* 确保所有元素可见 */
+    .sidebar {
+      display: block !important;
+      transform: none !important;
+      width: 240px !important;
+    }
+    
+    .content {
+      background-color: #f5f7fa !important;
+    }
+    
+    /* 强制显示所有元素 */
+    body * {
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+  </style>
+</head>
+<body class="admin-panel" style="display: flex; overflow: auto;">
+  <div class="debug-panel">
+    <div>调试模式已启用</div>
+    <div id="debug-info">加载中...</div>
+  </div>
+
+  <aside class="sidebar" style="background-color: #3a0ca3; color: white; height: 100vh;">
+    <div class="sidebar-header">
+      <h2>排课系统</h2>
+      <button id="toggle-sidebar" class="icon-button">≡</button>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#dashboard" class="nav-item active">
+        <span class="nav-icon">📊</span>
+        <span class="nav-text">概览</span>
+      </a>
+      <a href="#teachers" class="nav-item">
+        <span class="nav-icon">👩‍🏫</span>
+        <span class="nav-text">教师管理</span>
+      </a>
+      <a href="#courses" class="nav-item">
+        <span class="nav-icon">📚</span>
+        <span class="nav-text">课程管理</span>
+      </a>
+      <a href="#rooms" class="nav-item">
+        <span class="nav-icon">🏢</span>
+        <span class="nav-text">教室管理</span>
+      </a>
+      <a href="#settings" class="nav-item">
+        <span class="nav-icon">⚙️</span>
+        <span class="nav-text">系统设置</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="javascript:void(0);" class="logout-btn" style="display: flex; align-items: center; padding: 10px;">
+        <span class="nav-icon">🚪</span>
+        <span class="nav-text">退出登录</span>
+      </a>
+    </div>
+  </aside>
+
+  <main class="content" style="flex: 1; overflow: auto; padding: 20px;">
+    <header class="content-header">
+      <h1>仪表盘</h1>
+      <div class="user-info">
+        <img src="assets/img/admin-avatar.png" alt="管理员头像" class="avatar">
+        <span class="username">系统管理员</span>
+      </div>
+    </header>
+
+    <div class="dashboard">
+      <div class="stat-cards">
+        <div class="stat-card">
+          <div class="stat-value">12</div>
+          <div class="stat-label">教师总数</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">156</div>
+          <div class="stat-label">本周课程数</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">8</div>
+          <div class="stat-label">教室总数</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">85%</div>
+          <div class="stat-label">教室利用率</div>
+        </div>
+      </div>
+    </div>
+    
+    <div style="margin-top: 20px;">
+      <button onclick="showTeachersManagement()" style="padding: 10px; background-color: #4361ee; color: white; border: none; border-radius: 4px; cursor: pointer;">进入教师管理</button>
+      <button onclick="showCoursesManagement()" style="padding: 10px; background-color: #4cc9f0; color: white; border: none; border-radius: 4px; margin-left: 10px; cursor: pointer;">进入课程管理</button>
+      <button onclick="window.location.href='setup.html'" style="padding: 10px; background-color: #7209b7; color: white; border: none; border-radius: 4px; margin-left: 10px; cursor: pointer;">系统诊断工具</button>
+    </div>
+  </main>
+
+  <script>
+    // 调试信息
+    function updateDebugInfo() {
+      const debugInfo = document.getElementById('debug-info');
+      if (!debugInfo) return;
+      
+      const userInfo = sessionStorage.getItem('currentUser');
+      const teachersData = localStorage.getItem('teachers');
+      
+      let html = '';
+      
+      if (userInfo) {
+        html += `<div>用户信息: ${userInfo ? '已加载' : '未加载'}</div>`;
+      } else {
+        html += `<div style="color: red">未检测到登录信息!</div>`;
+      }
+      
+      if (teachersData) {
+        try {
+          const teachers = JSON.parse(teachersData);
+          html += `<div>教师数据: ${teachers.length}条</div>`;
+        } catch (e) {
+          html += `<div>教师数据解析错误</div>`;
+        }
+      } else {
+        html += `<div>未找到教师数据</div>`;
+      }
+      
+      debugInfo.innerHTML = html;
+    }
+    
+    // 教师管理
+    function showTeachersManagement() {
+      window.location.href = '#teachers';
+      const content = document.querySelector('.content');
+      
+      content.innerHTML = `
+        <header class="content-header">
+          <h1>教师管理</h1>
+          <div class="user-info">
+            <img src="assets/img/admin-avatar.png" alt="管理员头像" class="avatar">
+            <span class="username">系统管理员</span>
+          </div>
+        </header>
+        
+        <div class="section-content">
+          <div class="section-actions">
+            <button id="add-teacher" class="btn" style="padding: 10px; background-color: #4caf50; color: white; border: none; border-radius: 4px; cursor: pointer;">添加教师</button>
+            <div class="search-box" style="margin-left: 10px;">
+              <input type="text" id="teacher-search" placeholder="搜索教师...">
+            </div>
+          </div>
+
+          <div class="data-table-container" style="margin-top: 20px; background: white; border-radius: 8px; padding: 10px;">
+            <table class="data-table" style="width: 100%; border-collapse: collapse;">
+              <thead>
+                <tr>
+                  <th style="padding: 10px; border-bottom: 1px solid #ddd; text-align: left;">ID</th>
+                  <th style="padding: 10px; border-bottom: 1px solid #ddd; text-align: left;">姓名</th>
+                  <th style="padding: 10px; border-bottom: 1px solid #ddd; text-align: left;">学科</th>
+                  <th style="padding: 10px; border-bottom: 1px solid #ddd; text-align: left;">联系电话</th>
+                  <th style="padding: 10px; border-bottom: 1px solid #ddd; text-align: left;">邮箱</th>
+                  <th style="padding: 10px; border-bottom: 1px solid #ddd; text-align: left;">操作</th>
+                </tr>
+              </thead>
+              <tbody id="teachers-table-body">
+                <!-- 这里将通过JavaScript动态填充教师数据 -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+      
+      renderTeachersList();
+    }
+    
+    // 课程管理
+    function showCoursesManagement() {
+      window.location.href = '#courses';
+      const content = document.querySelector('.content');
+      
+      content.innerHTML = `
+        <header class="content-header">
+          <h1>课程管理</h1>
+          <div class="user-info">
+            <img src="assets/img/admin-avatar.png" alt="管理员头像" class="avatar">
+            <span class="username">系统管理员</span>
+          </div>
+        </header>
+        
+        <div class="section-content">
+          <div class="section-actions">
+            <button id="add-course" class="btn" style="padding: 10px; background-color: #4caf50; color: white; border: none; border-radius: 4px; cursor: pointer;">添加课程</button>
+            <div class="search-box" style="margin-left: 10px;">
+              <input type="text" id="course-search" placeholder="搜索课程...">
+            </div>
+          </div>
+
+          <div class="data-table-container" style="margin-top: 20px; background: white; border-radius: 8px; padding: 10px;">
+            <table class="data-table" style="width: 100%; border-collapse: collapse;">
+              <thead>
+                <tr>
+                  <th style="padding: 10px; border-bottom: 1px solid #ddd; text-align: left;">ID</th>
+                  <th style="padding: 10px; border-bottom: 1px solid #ddd; text-align: left;">课程名称</th>
+                  <th style="padding: 10px; border-bottom: 1px solid #ddd; text-align: left;">教师</th>
+                  <th style="padding: 10px; border-bottom: 1px solid #ddd; text-align: left;">日期</th>
+                  <th style="padding: 10px; border-bottom: 1px solid #ddd; text-align: left;">操作</th>
+                </tr>
+              </thead>
+              <tbody id="courses-table-body">
+                <!-- 这里将通过JavaScript动态填充课程数据 -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+      
+      renderCoursesList();
+    }
+    
+    // 渲染教师列表
+    function renderTeachersList() {
+      const tableBody = document.getElementById('teachers-table-body');
+      if (!tableBody) return;
+      
+      tableBody.innerHTML = '';
+      
+      // 尝试获取教师数据
+      const teachersData = localStorage.getItem('teachers');
+      if (!teachersData) {
+        tableBody.innerHTML = '<tr><td colspan="6">未找到教师数据</td></tr>';
+        return;
+      }
+      
+      try {
+        const teachers = JSON.parse(teachersData);
+        
+        // 遍历教师数组并添加到表格中
+        teachers.forEach(teacher => {
+          const row = document.createElement('tr');
+          
+          row.innerHTML = `
+            <td style="padding: 10px; border-bottom: 1px solid #eee;">${teacher.id}</td>
+            <td style="padding: 10px; border-bottom: 1px solid #eee;">
+              <div style="display: flex; align-items: center;">
+                <div style="width: 15px; height: 15px; background-color: ${teacher.color || '#4cc9f0'}; margin-right: 5px; border-radius: 50%;"></div>
+                ${teacher.name}
+              </div>
+            </td>
+            <td style="padding: 10px; border-bottom: 1px solid #eee;">${teacher.subject ? teacher.subject.join(', ') : '未设置'}</td>
+            <td style="padding: 10px; border-bottom: 1px solid #eee;">${teacher.phone || '未设置'}</td>
+            <td style="padding: 10px; border-bottom: 1px solid #eee;">${teacher.email || '未设置'}</td>
+            <td style="padding: 10px; border-bottom: 1px solid #eee;">
+              <div>
+                <button style="background-color: #2196f3; color: white; border: none; border-radius: 4px; padding: 5px 10px; cursor: pointer;">编辑</button>
+                <button style="background-color: #f44336; color: white; border: none; border-radius: 4px; padding: 5px 10px; cursor: pointer; margin-left: 5px;">删除</button>
+              </div>
+            </td>
+          `;
+          
+          tableBody.appendChild(row);
+        });
+      } catch (error) {
+        tableBody.innerHTML = `<tr><td colspan="6">解析教师数据失败: ${error.message}</td></tr>`;
+      }
+    }
+    
+    // 渲染课程列表
+    function renderCoursesList() {
+      const tableBody = document.getElementById('courses-table-body');
+      if (!tableBody) return;
+      
+      tableBody.innerHTML = '';
+      
+      // 尝试获取课程数据
+      const schedulesData = localStorage.getItem('schedules');
+      if (!schedulesData) {
+        tableBody.innerHTML = '<tr><td colspan="5">未找到课程数据</td></tr>';
+        return;
+      }
+      
+      try {
+        const schedules = JSON.parse(schedulesData);
+        const teachersData = localStorage.getItem('teachers');
+        let teachers = [];
+        
+        if (teachersData) {
+          teachers = JSON.parse(teachersData);
+        }
+        
+        // 遍历课程数组并添加到表格中
+        schedules.forEach(course => {
+          const row = document.createElement('tr');
+          
+          // 找到教师名称
+          let teacherName = course.teacherName || '未知教师';
+          const teacher = teachers.find(t => t.id === course.teacherId);
+          if (teacher) {
+            teacherName = teacher.name;
+          }
+          
+          row.innerHTML = `
+            <td style="padding: 10px; border-bottom: 1px solid #eee;">${course.id}</td>
+            <td style="padding: 10px; border-bottom: 1px solid #eee;">
+              <div style="display: flex; align-items: center;">
+                <div style="width: 15px; height: 15px; background-color: ${course.color || '#4cc9f0'}; margin-right: 5px; border-radius: 50%;"></div>
+                ${course.subject}
+              </div>
+            </td>
+            <td style="padding: 10px; border-bottom: 1px solid #eee;">${teacherName}</td>
+            <td style="padding: 10px; border-bottom: 1px solid #eee;">${course.date} ${course.startTime}-${course.endTime}</td>
+            <td style="padding: 10px; border-bottom: 1px solid #eee;">
+              <div>
+                <button style="background-color: #2196f3; color: white; border: none; border-radius: 4px; padding: 5px 10px; cursor: pointer;">编辑</button>
+                <button style="background-color: #f44336; color: white; border: none; border-radius: 4px; padding: 5px 10px; cursor: pointer; margin-left: 5px;">删除</button>
+              </div>
+            </td>
+          `;
+          
+          tableBody.appendChild(row);
+        });
+      } catch (error) {
+        tableBody.innerHTML = `<tr><td colspan="5">解析课程数据失败: ${error.message}</td></tr>`;
+      }
+    }
+    
+    // 页面加载后检查用户状态
+    document.addEventListener('DOMContentLoaded', function() {
+      // 检查用户信息
+      const userJson = sessionStorage.getItem('currentUser');
+      if (!userJson) {
+        alert('您尚未登录，即将跳转到登录页面');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      try {
+        const user = JSON.parse(userJson);
+        if (user.role !== 'admin') {
+          alert('您没有管理员权限，无法访问此页面');
+          window.location.href = 'index.html';
+          return;
+        }
+        
+        // 更新用户名显示
+        const usernameElement = document.querySelector('.username');
+        if (usernameElement) {
+          usernameElement.textContent = user.name;
+        }
+        
+        // 注册退出登录事件
+        const logoutBtn = document.querySelector('.logout-btn');
+        if (logoutBtn) {
+          logoutBtn.addEventListener('click', function() {
+            sessionStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+          });
+        }
+        
+        // 检查URL hash，决定显示哪个页面
+        const hash = window.location.hash;
+        if (hash === '#teachers') {
+          showTeachersManagement();
+        } else if (hash === '#courses') {
+          showCoursesManagement();
+        }
+        
+        // 添加hash变化监听
+        window.addEventListener('hashchange', function() {
+          const hash = window.location.hash;
+          if (hash === '#teachers') {
+            showTeachersManagement();
+          } else if (hash === '#courses') {
+            showCoursesManagement();
+          } else if (hash === '#dashboard') {
+            window.location.reload();
+          }
+        });
+        
+        // 更新调试信息
+        updateDebugInfo();
+      } catch (error) {
+        console.error('解析用户数据失败:', error);
+        alert('会话信息无效，请重新登录');
+        window.location.href = 'login.html';
+      }
+    });
+  </script>
+</body>
+</html> 
