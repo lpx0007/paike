@@ -593,16 +593,24 @@ class ScheduleManager {
           timeCell.addEventListener('mouseover', (e) => this.continueTimeSelection(e, timeCell));
           timeCell.addEventListener('mouseup', (e) => this.endTimeSelection(e));
           
-          // 触摸事件支持
-          timeCell.addEventListener('touchstart', (e) => this.startTimeSelection(e, timeCell));
+          // 优化的触摸事件支持
+          timeCell.addEventListener('touchstart', (e) => {
+            // 不阻止默认事件，允许正常滚动
+            this.startTimeSelection(e, timeCell);
+          }, {passive: true});
+          
           timeCell.addEventListener('touchmove', (e) => {
+            // 在移动时进行选择逻辑
             const touch = e.touches[0];
             const elementAtTouch = document.elementFromPoint(touch.clientX, touch.clientY);
             if (elementAtTouch && elementAtTouch.classList.contains('time-cell')) {
               this.continueTimeSelection(e, elementAtTouch);
             }
+          }, {passive: true});
+          
+          timeCell.addEventListener('touchend', (e) => {
+            this.endTimeSelection(e);
           });
-          timeCell.addEventListener('touchend', (e) => this.endTimeSelection(e));
           
           teacherSlots.appendChild(timeCell);
         }
@@ -716,16 +724,24 @@ class ScheduleManager {
           dayCell.addEventListener('mouseover', (e) => this.continueTimeSelection(e, dayCell));
           dayCell.addEventListener('mouseup', (e) => this.endTimeSelection(e));
           
-          // 触摸事件支持
-          dayCell.addEventListener('touchstart', (e) => this.startTimeSelection(e, dayCell));
+          // 优化的触摸事件支持
+          dayCell.addEventListener('touchstart', (e) => {
+            // 不阻止默认事件，允许正常滚动
+            this.startTimeSelection(e, dayCell);
+          }, {passive: true});
+          
           dayCell.addEventListener('touchmove', (e) => {
+            // 在移动时进行选择逻辑
             const touch = e.touches[0];
             const elementAtTouch = document.elementFromPoint(touch.clientX, touch.clientY);
-            if (elementAtTouch && (elementAtTouch.classList.contains('week-day-cell') || elementAtTouch.classList.contains('time-cell'))) {
+            if (elementAtTouch && elementAtTouch.classList.contains('week-day-cell') || elementAtTouch.classList.contains('time-cell')) {
               this.continueTimeSelection(e, elementAtTouch);
             }
+          }, {passive: true});
+          
+          dayCell.addEventListener('touchend', (e) => {
+            this.endTimeSelection(e);
           });
-          dayCell.addEventListener('touchend', (e) => this.endTimeSelection(e));
           
           timeRow.appendChild(dayCell);
         });
@@ -1505,70 +1521,51 @@ class ScheduleManager {
         });
       });
       
-      // 添加水平滑动支持
+      // 滚动处理变量
       let touchStartX = 0;
+      let touchStartY = 0;
       let scrollLeft = 0;
+      let startTime = 0;
+      let isSwiping = false;
       
-      // 内容区域触摸事件
+      // 内容区域触摸事件 - 改进滑动体验
       contentArea.addEventListener('touchstart', (e) => {
         touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
         scrollLeft = contentArea.scrollLeft;
-      });
+        startTime = Date.now();
+        isSwiping = false;
+      }, {passive: true});
       
       contentArea.addEventListener('touchmove', (e) => {
         if (!touchStartX) return;
+        
         const touchX = e.touches[0].clientX;
-        const walk = (touchStartX - touchX);
-        contentArea.scrollLeft = scrollLeft + walk;
+        const touchY = e.touches[0].clientY;
+        const moveX = touchStartX - touchX;
+        const moveY = Math.abs(touchStartY - touchY);
+        
+        // 如果水平滑动距离大于垂直滑动，且大于10px，则认为是在滑动课程表
+        if (Math.abs(moveX) > moveY && Math.abs(moveX) > 10) {
+          isSwiping = true;
+          contentArea.scrollLeft = scrollLeft + moveX;
+          
+          // 阻止默认行为，防止页面滚动
+          if (Math.abs(moveX) > 30) {
+            e.preventDefault();
+          }
+        }
       });
       
-      contentArea.addEventListener('touchend', () => {
+      contentArea.addEventListener('touchend', (e) => {
+        // 如果是滑动操作，则阻止可能的点击事件
+        if (isSwiping) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
         touchStartX = 0;
-      });
-      
-      // 表头触摸事件 - 通过表头滑动来控制内容区域
-      teachersHeaderRow.addEventListener('touchstart', (e) => {
-        touchStartX = e.touches[0].clientX;
-        scrollLeft = contentArea.scrollLeft;
-        teachersHeaderRow.style.cursor = 'grabbing';
-        e.preventDefault(); // 防止点击事件
-      });
-      
-      teachersHeaderRow.addEventListener('touchmove', (e) => {
-        if (!touchStartX) return;
-        const touchX = e.touches[0].clientX;
-        const walk = (touchStartX - touchX);
-        contentArea.scrollLeft = scrollLeft + walk;
-        e.preventDefault(); // 防止页面滚动
-      });
-      
-      teachersHeaderRow.addEventListener('touchend', () => {
-        touchStartX = 0;
-        teachersHeaderRow.style.cursor = '';
-      });
-      
-      // 鼠标拖动事件
-      let isMouseDown = false;
-      
-      teachersHeaderRow.addEventListener('mousedown', (e) => {
-        isMouseDown = true;
-        touchStartX = e.clientX;
-        scrollLeft = contentArea.scrollLeft;
-        teachersHeaderRow.style.cursor = 'grabbing';
-        e.preventDefault();
-      });
-      
-      document.addEventListener('mousemove', (e) => {
-        if (!isMouseDown) return;
-        const x = e.clientX;
-        const walk = (touchStartX - x);
-        contentArea.scrollLeft = scrollLeft + walk;
-      });
-      
-      document.addEventListener('mouseup', () => {
-        isMouseDown = false;
-        teachersHeaderRow.style.cursor = 'grab';
-      });
+        isSwiping = false;
+      }, {passive: false});
     }
   }
   
@@ -2246,6 +2243,34 @@ class ScheduleManager {
     // 如果不是左键点击或触摸，则忽略
     if (e.type === 'mousedown' && e.button !== 0) return;
     
+    // 为触摸事件添加长按判断
+    if (e.type === 'touchstart') {
+      // 清除之前的定时器
+      if (this.longPressTimer) clearTimeout(this.longPressTimer);
+      
+      // 记录触摸起始位置
+      this.touchStartX = e.touches[0].clientX;
+      this.touchStartY = e.touches[0].clientY;
+      
+      // 添加长按定时器 - 750毫秒后才触发创建课程
+      this.longPressTimer = setTimeout(() => {
+        // 检查是否有明显移动，如果移动超过10像素则认为是在滑动而非长按
+        this.isSelecting = true;
+        this.selectedTimeCells = [timeCell];
+        timeCell.classList.add('selected');
+        
+        // 记录开始选择的教师ID
+        this.selectingTeacherId = timeCell.dataset.teacherId;
+        
+        // 显示反馈
+        navigator.vibrate && navigator.vibrate(50); // 如果支持振动，给予振动反馈
+        this.showToast('请松开手指完成课程创建');
+      }, 750);
+      
+      return;
+    }
+    
+    // 鼠标事件处理保持不变
     this.isSelecting = true;
     this.selectedTimeCells = [timeCell];
     timeCell.classList.add('selected');
@@ -2263,6 +2288,25 @@ class ScheduleManager {
   continueTimeSelection(e, timeCell) {
     if (!this.isSelecting) return;
     
+    // 触摸事件处理 - 检查是否为滑动手势
+    if (e.type === 'touchmove') {
+      // 如果长按定时器还在，说明还没触发长按，检查移动距离
+      if (this.longPressTimer) {
+        const touchX = e.touches[0].clientX;
+        const touchY = e.touches[0].clientY;
+        const moveX = Math.abs(touchX - this.touchStartX);
+        const moveY = Math.abs(touchY - this.touchStartY);
+        
+        // 如果移动超过10像素，则取消长按定时器，认为是滑动而非创建课程
+        if (moveX > 10 || moveY > 10) {
+          clearTimeout(this.longPressTimer);
+          this.longPressTimer = null;
+          this.isSelecting = false;
+          return;
+        }
+      }
+    }
+    
     // 确保只选择同一个教师的时间格子
     if (timeCell.dataset.teacherId !== this.selectingTeacherId) return;
     
@@ -2275,6 +2319,15 @@ class ScheduleManager {
   
   // 结束选择时间段
   endTimeSelection(e) {
+    // 触摸事件处理
+    if (e.type === 'touchend') {
+      // 清除长按定时器
+      if (this.longPressTimer) {
+        clearTimeout(this.longPressTimer);
+        this.longPressTimer = null;
+      }
+    }
+    
     if (!this.isSelecting) return;
     
     this.isSelecting = false;
