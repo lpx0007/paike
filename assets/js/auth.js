@@ -250,12 +250,24 @@ class AuthManager {
     
     console.log('尝试登录:', username);
     
+    // 确保教师数据已加载
+    if (this.teachers.length === 0) {
+      this.loadTeachers().then(() => {
+        this.validateAndLogin(username, password);
+      });
+    } else {
+      this.validateAndLogin(username, password);
+    }
+  }
+  
+  validateAndLogin(username, password) {
     // 查找用户
     const user = this.teachers.find(
       t => t.username && t.username.toLowerCase() === username.toLowerCase()
     );
     
     if (!user) {
+      console.error('用户不存在:', username, '可用教师:', this.teachers);
       this.showLoginError('用户不存在');
       return;
     }
@@ -288,6 +300,10 @@ class AuthManager {
     // 清除会话数据
     sessionStorage.removeItem('currentUser');
     this.currentUser = null;
+    
+    // 清除重定向标记
+    sessionStorage.removeItem('redirectCheck');
+    sessionStorage.removeItem('redirectAttempted');
     
     // 重定向到登录页
     window.location.href = 'login.html';

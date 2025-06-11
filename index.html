@@ -230,7 +230,7 @@
 </head>
 <body>
   <header class="app-header">
-    <a href="login.html" class="back-button">
+    <a href="javascript:void(0)" id="back-button" class="back-button">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M19 12H5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M12 19L5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -437,6 +437,26 @@
   <script src="assets/js/calendar.js?v=1.6"></script>
   <script src="assets/js/schedule.js?v=3.1"></script>
   <script>
+    // 设置返回按钮的点击事件
+    document.addEventListener('DOMContentLoaded', function() {
+      const backButton = document.getElementById('back-button');
+      if (backButton) {
+        backButton.addEventListener('click', function() {
+          console.log('返回按钮被点击，执行注销...');
+          // 调用authManager的logout方法
+          if (window.authManager) {
+            window.authManager.logout();
+          } else {
+            // 如果authManager不可用，直接跳转到登录页
+            sessionStorage.removeItem('currentUser');
+            sessionStorage.removeItem('redirectCheck');
+            sessionStorage.removeItem('redirectAttempted');
+            window.location.href = 'login.html';
+          }
+        });
+      }
+    });
+
     // 添加课程时间冲突检查功能
     document.addEventListener('DOMContentLoaded', function() {
       // 获取当前登录教师的ID
@@ -770,23 +790,27 @@
     });
 
     // 防止重复跳转的标记
-    if (!sessionStorage.getItem('redirectAttempted')) {
+    document.addEventListener('DOMContentLoaded', function() {
       // 检查用户登录状态
       const currentUser = sessionStorage.getItem('currentUser');
       if (!currentUser) {
         console.log('用户未登录，准备跳转到登录页面');
-        // 设置标记，防止循环跳转
-        sessionStorage.setItem('redirectAttempted', 'true');
-        // 使用超时，避免立即跳转造成的问题
-        setTimeout(function() {
-          window.location.href = 'login.html';
-        }, 1000);
+        // 清除所有可能阻止重定向的标记
+        sessionStorage.removeItem('redirectAttempted');
+        sessionStorage.removeItem('redirectCheck');
+        // 立即跳转到登录页面
+        window.location.href = 'login.html';
       } else {
         console.log('用户已登录，无需跳转');
+        // 更新页面上的用户信息
+        try {
+          const user = JSON.parse(currentUser);
+          document.querySelector('.username').textContent = user.name || '未知用户';
+        } catch (error) {
+          console.error('解析用户数据失败:', error);
+        }
       }
-    } else {
-      console.log('已尝试过跳转，不再重复跳转');
-    }
+    });
   </script>
 </body>
 </html> 
