@@ -24,7 +24,7 @@ class AdminManager {
     
     // 使用requestAnimationFrame延迟初始化，避免与页面渲染冲突
     requestAnimationFrame(() => {
-      this.init();
+    this.init();
     });
   }
   
@@ -34,7 +34,7 @@ class AdminManager {
     
     // 只在初始化时清除缓存一次
     this.clearDataCache();
-
+    
     // 加载数据
     await this.loadData();
     
@@ -340,14 +340,14 @@ class AdminManager {
       } catch (error) {
         console.error('加载默认数据失败:', error);
         // 使用备用数据，一次性加载所有数据
-        await Promise.all([
-          this.loadTeachers(),
-          this.loadRooms(),
-          this.loadSchedules()
-        ]);
+      await Promise.all([
+        this.loadTeachers(),
+        this.loadRooms(),
+        this.loadSchedules()
+      ]);
       
         // 保存数据到localStorage
-        this.saveData();
+      this.saveData();
       }
     }
     
@@ -815,10 +815,39 @@ class AdminManager {
           </div>
         </div>
         
+        <!-- 教师排课分析图表 -->
         <div class="chart-container">
-          <h3>教室使用情况</h3>
-          <div class="chart">
-            <div class="chart-placeholder">教室使用率图表</div>
+          <div class="chart-header">
+            <h3>教师使用情况</h3>
+            <!-- 时间范围选择控件 -->
+            <div class="filter-container">
+              <select id="time-range-filter">
+                <option value="all">全部数据</option>
+                <option value="month">本月</option>
+                <option value="week">本周</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="section-tabs">
+            <button class="tab-btn active" data-tab="teacher-workload">课时工作量</button>
+            <button class="tab-btn" data-tab="subject-distribution">课程类型</button>
+            <button class="tab-btn" data-tab="time-distribution">时段分布</button>
+            <button class="tab-btn" data-tab="subject-detail">课程明细</button>
+          </div>
+          <div class="teacher-analytics-tabs">
+            <div id="teacher-workload" class="chart analytics-tab">
+              <div id="teacher-workload-chart" style="width:100%;height:300px;"></div>
+            </div>
+            <div id="subject-distribution" class="chart analytics-tab" style="display:none;">
+              <div id="subject-distribution-chart" style="width:100%;height:300px;"></div>
+            </div>
+            <div id="time-distribution" class="chart analytics-tab" style="display:none;">
+              <div id="time-distribution-chart" style="width:100%;height:300px;"></div>
+            </div>
+            <div id="subject-detail" class="chart analytics-tab" style="display:none;">
+              <div id="subject-detail-chart" style="width:100%;height:300px;"></div>
+            </div>
           </div>
         </div>
         
@@ -830,6 +859,122 @@ class AdminManager {
         </div>
       </div>
     `;
+
+    // 添加选项卡切换事件
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const analyticsTabs = document.querySelectorAll('.analytics-tab');
+    
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // 移除所有按钮的active类
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        
+        // 隐藏所有内容
+        analyticsTabs.forEach(tab => tab.style.display = 'none');
+        
+        // 激活当前按钮
+        button.classList.add('active');
+        
+        // 显示对应的内容
+        const tabId = button.getAttribute('data-tab');
+        document.getElementById(tabId).style.display = 'block';
+        
+        // 重新绘制图表以适应新的容器大小
+        if (this.teacherAnalytics && this.teacherAnalytics.charts) {
+          const chartTypes = {
+            'teacher-workload': 'workload',
+            'subject-distribution': 'subjects',
+            'time-distribution': 'heatmap',
+            'subject-detail': 'subjectDetail'
+          };
+          
+          const chartType = chartTypes[tabId];
+          if (chartType && this.teacherAnalytics.charts[chartType]) {
+            this.teacherAnalytics.charts[chartType].resize();
+          }
+        }
+      });
+    });
+
+    // 时间范围选择器变化事件
+    const timeRangeFilter = document.getElementById('time-range-filter');
+    if (timeRangeFilter) {
+      timeRangeFilter.addEventListener('change', (e) => {
+        const selectedRange = e.target.value;
+        if (this.teacherAnalytics) {
+          this.teacherAnalytics.setTimeRange(selectedRange);
+          this.teacherAnalytics.updateAllCharts();
+        }
+      });
+    }
+
+    // 初始化教师排课分析
+    this.initTeacherAnalytics();
+  }
+  
+  // 初始化教师排课分析
+  initTeacherAnalytics() {
+    // 检查ECharts是否已加载
+    if (typeof echarts === 'undefined') {
+      // 动态加载ECharts库
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js';
+      script.onload = () => {
+        console.log('ECharts加载成功');
+        this.loadTeacherAnalytics();
+      };
+      script.onerror = () => {
+        console.error('ECharts加载失败');
+        const chartContainers = document.querySelectorAll('.chart');
+        chartContainers.forEach(container => {
+          container.innerHTML = '<div class="error-message">图表加载失败：无法加载ECharts库</div>';
+        });
+      };
+      document.head.appendChild(script);
+    } else {
+      this.loadTeacherAnalytics();
+    }
+  }
+  
+  // 加载教师排课分析
+  loadTeacherAnalytics() {
+    try {
+      // 检查TeacherAnalytics类是否可用
+      if (typeof TeacherAnalytics === 'undefined') {
+        // 动态加载TeacherAnalytics
+        const script = document.createElement('script');
+        script.src = 'assets/js/teacher-analytics.js';
+        script.onload = () => {
+          console.log('TeacherAnalytics加载成功');
+          this.createTeacherAnalytics();
+        };
+        script.onerror = () => {
+          console.error('TeacherAnalytics加载失败');
+          const chartContainers = document.querySelectorAll('.chart');
+          chartContainers.forEach(container => {
+            container.innerHTML = '<div class="error-message">图表加载失败：无法加载分析模块</div>';
+          });
+        };
+        document.head.appendChild(script);
+      } else {
+        this.createTeacherAnalytics();
+      }
+    } catch (error) {
+      console.error('加载教师排课分析时出错:', error);
+    }
+  }
+  
+  // 创建教师排课分析实例
+  createTeacherAnalytics() {
+    // 创建TeacherAnalytics实例
+    this.teacherAnalytics = new TeacherAnalytics(this);
+    this.teacherAnalytics.init(this.teachers, this.schedules);
+    
+    // 渲染图表
+    this.teacherAnalytics.renderTeacherWorkloadChart('teacher-workload-chart');
+    this.teacherAnalytics.renderTeacherSubjectDistribution('subject-distribution-chart');
+    this.teacherAnalytics.renderTimeDistributionHeatmap('time-distribution-chart');
+    this.teacherAnalytics.renderTeacherSubjectDetailChart('subject-detail-chart');
   }
     
     // 计算教室利用率

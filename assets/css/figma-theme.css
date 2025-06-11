@@ -1,0 +1,453 @@
+/* Figma风格设计系统 */
+:root {
+  /* 色彩系统 */
+  --fig-primary: #4361ee;
+  --fig-primary-hover: #3a56e0;
+  --fig-primary-light: #eef1ff;
+  --fig-success: #10b981;
+  --fig-warning: #f59e0b;
+  --fig-danger: #ef4444;
+  --fig-info: #3b82f6;
+  
+  /* 中性色 */
+  --fig-bg: #f9fafb;
+  --fig-card-bg: #ffffff;
+  --fig-text-primary: #111827;
+  --fig-text-secondary: #4b5563;
+  --fig-text-tertiary: #9ca3af;
+  --fig-border: #e5e7eb;
+  --fig-border-light: #f3f4f6;
+  
+  /* 尺寸与间距 */
+  --fig-border-radius-sm: 6px;
+  --fig-border-radius-md: 8px;
+  --fig-border-radius-lg: 12px;
+  --fig-spacing-xs: 4px;
+  --fig-spacing-sm: 8px;
+  --fig-spacing-md: 16px;
+  --fig-spacing-lg: 24px;
+  --fig-spacing-xl: 32px;
+  
+  /* 阴影 */
+  --fig-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --fig-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --fig-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  
+  /* 字体 */
+  --fig-font-sans: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+
+/* 主题切换开关样式 */
+.figma-theme .theme-switcher .switch .slider {
+  background-color: #e2e8f0 !important;
+}
+
+.figma-theme .theme-switcher .switch input:checked + .slider {
+  background-color: var(--fig-primary) !important;
+}
+
+/* 全局样式 */
+body.figma-theme {
+  background-color: var(--fig-bg);
+  color: var(--fig-text-primary);
+  font-family: var(--fig-font-sans);
+}
+
+/* 侧边栏样式 */
+.figma-theme .sidebar {
+  background: linear-gradient(180deg, #4361ee 0%, #3a56e0 100%);
+  border-radius: 0 var(--fig-border-radius-lg) var(--fig-border-radius-lg) 0;
+}
+
+.figma-theme .sidebar-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.figma-theme .sidebar-header h2 {
+  font-weight: 600;
+  font-size: 1.4rem;
+}
+
+.figma-theme .nav-item {
+  border-radius: var(--fig-border-radius-md);
+  margin: 4px var(--fig-spacing-sm);
+  padding: var(--fig-spacing-sm) var(--fig-spacing-md);
+  transition: all 0.2s ease;
+}
+
+.figma-theme .nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.figma-theme .nav-item.active {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-left: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* 现代图标样式 */
+.figma-theme .nav-icon {
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: var(--fig-spacing-md);
+}
+
+/* 主内容区域 */
+.figma-theme .content {
+  padding: var(--fig-spacing-lg);
+}
+
+.figma-theme .content-header {
+  margin-bottom: var(--fig-spacing-lg);
+  padding-bottom: var(--fig-spacing-md);
+  border-bottom: 1px solid var(--fig-border);
+  display: flex;
+  align-items: center;
+}
+
+.figma-theme .content-header h1 {
+  font-weight: 600;
+  font-size: 1.5rem;
+  color: var(--fig-text-primary);
+  margin: 0;
+}
+
+.figma-theme .user-info {
+  display: flex;
+  align-items: center;
+}
+
+.figma-theme .avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid white;
+  box-shadow: var(--fig-shadow-sm);
+}
+
+.figma-theme .username {
+  font-weight: 500;
+  color: var(--fig-text-secondary);
+  margin-left: var(--fig-spacing-sm);
+}
+
+/* 卡片样式 */
+.figma-theme .stat-card,
+.figma-theme .chart-container,
+.figma-theme .recent-activity,
+.figma-theme .analytics-tab {
+  background-color: var(--fig-card-bg);
+  border-radius: var(--fig-border-radius-lg);
+  box-shadow: var(--fig-shadow-sm);
+  border: 1px solid var(--fig-border-light);
+  transition: all 0.3s ease;
+}
+
+.figma-theme .stat-card:hover,
+.figma-theme .chart-container:hover,
+.figma-theme .analytics-tab:hover {
+  box-shadow: var(--fig-shadow-md);
+  transform: translateY(-2px);
+}
+
+.figma-theme .stat-cards {
+  gap: var(--fig-spacing-md);
+}
+
+.figma-theme .stat-card {
+  padding: var(--fig-spacing-lg);
+}
+
+.figma-theme .stat-value {
+  color: var(--fig-primary);
+  font-weight: 600;
+  font-size: 2.2rem;
+}
+
+.figma-theme .stat-label {
+  color: var(--fig-text-secondary);
+  font-size: 0.95rem;
+  margin-top: var(--fig-spacing-xs);
+}
+
+.figma-theme .chart-container {
+  padding: var(--fig-spacing-lg);
+}
+
+.figma-theme .chart-container h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--fig-text-primary);
+  margin-top: 0;
+  margin-bottom: var(--fig-spacing-md);
+}
+
+/* 按钮样式 */
+.figma-theme .primary-btn {
+  background-color: var(--fig-primary);
+  color: white;
+  border-radius: var(--fig-border-radius-md);
+  padding: var(--fig-spacing-sm) var(--fig-spacing-md);
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.figma-theme .primary-btn:hover {
+  background-color: var(--fig-primary-hover);
+  box-shadow: var(--fig-shadow-md);
+}
+
+.figma-theme .secondary-btn {
+  background-color: var(--fig-bg);
+  color: var(--fig-text-primary);
+  border: 1px solid var(--fig-border);
+  border-radius: var(--fig-border-radius-md);
+}
+
+.figma-theme .danger-btn {
+  background-color: var(--fig-danger);
+}
+
+/* 表格样式 */
+.figma-theme .data-table {
+  border-radius: var(--fig-border-radius-md);
+  overflow: hidden;
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+}
+
+.figma-theme .data-table th {
+  background-color: var(--fig-primary-light);
+  color: var(--fig-primary);
+  font-weight: 600;
+  padding: var(--fig-spacing-md);
+  text-align: left;
+}
+
+.figma-theme .data-table td {
+  padding: var(--fig-spacing-md);
+  border-bottom: 1px solid var(--fig-border-light);
+}
+
+.figma-theme .data-table tr:last-child td {
+  border-bottom: none;
+}
+
+.figma-theme .data-table tr:hover td {
+  background-color: var(--fig-primary-light);
+}
+
+/* 表单样式 */
+.figma-theme .form-group input,
+.figma-theme .form-group select,
+.figma-theme .form-group textarea {
+  border: 1px solid var(--fig-border);
+  border-radius: var(--fig-border-radius-md);
+  padding: var(--fig-spacing-md);
+  transition: all 0.2s ease;
+}
+
+.figma-theme .form-group input:focus,
+.figma-theme .form-group select:focus,
+.figma-theme .form-group textarea:focus {
+  border-color: var(--fig-primary);
+  box-shadow: 0 0 0 3px var(--fig-primary-light);
+  outline: none;
+}
+
+.figma-theme .form-group label {
+  color: var(--fig-text-secondary);
+  margin-bottom: var(--fig-spacing-xs);
+  font-weight: 500;
+}
+
+/* 选项卡样式 */
+.figma-theme .section-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--fig-border);
+  margin-bottom: var(--fig-spacing-lg);
+}
+
+.figma-theme .tab-btn {
+  padding: var(--fig-spacing-md);
+  font-weight: 500;
+  color: var(--fig-text-secondary);
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.figma-theme .tab-btn.active {
+  color: var(--fig-primary);
+  border-bottom: 2px solid var(--fig-primary);
+}
+
+/* 模态框样式 */
+.figma-theme .modal-content {
+  border-radius: var(--fig-border-radius-lg);
+  border: none;
+  box-shadow: var(--fig-shadow-lg);
+}
+
+.figma-theme .modal-header {
+  border-bottom: 1px solid var(--fig-border);
+  padding: var(--fig-spacing-md) var(--fig-spacing-lg);
+}
+
+.figma-theme .modal-body {
+  padding: var(--fig-spacing-lg);
+}
+
+.figma-theme .close-btn {
+  width: 32px;
+  height: 32px;
+  background-color: var(--fig-bg);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.figma-theme .close-btn:hover {
+  background-color: var(--fig-border-light);
+}
+
+/* 教师分析图表样式 */
+.figma-theme .teacher-analytics-tabs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--fig-spacing-md);
+  margin-top: var(--fig-spacing-lg);
+}
+
+.figma-theme .analytics-tab {
+  padding: var(--fig-spacing-lg);
+  min-height: 350px;
+}
+
+.figma-theme .chart-container .chart-header {
+  margin-bottom: var(--fig-spacing-md);
+}
+
+.figma-theme .chart-container .chart-header h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--fig-text-primary);
+}
+
+.figma-theme .chart-container .filter-container select {
+  background-color: var(--fig-bg);
+  border: 1px solid var(--fig-border);
+  border-radius: var(--fig-border-radius-md);
+  padding: var(--fig-spacing-sm) var(--fig-spacing-md);
+  font-size: 0.9rem;
+  color: var(--fig-text-primary);
+}
+
+/* 活动列表样式 */
+.figma-theme .activity-list {
+  list-style: none;
+}
+
+.figma-theme .activity-item {
+  padding: var(--fig-spacing-md) 0;
+  border-bottom: 1px solid var(--fig-border-light);
+  display: flex;
+  align-items: center;
+}
+
+.figma-theme .activity-icon {
+  background-color: var(--fig-primary-light);
+  color: var(--fig-primary);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: var(--fig-spacing-md);
+  font-size: 1rem;
+}
+
+.figma-theme .activity-title {
+  color: var(--fig-text-primary);
+  font-weight: 500;
+}
+
+.figma-theme .activity-time {
+  color: var(--fig-text-tertiary);
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+/* 加载效果 */
+.figma-theme .chart-loading span {
+  background-color: var(--fig-primary);
+}
+
+/* 错误消息 */
+.figma-theme .error-message {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--fig-danger);
+  border-radius: var(--fig-border-radius-md);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* 提示框 */
+.figma-theme .toast {
+  background-color: var(--fig-primary);
+  border-radius: var(--fig-border-radius-md);
+  box-shadow: var(--fig-shadow-lg);
+}
+
+/* 移动导航样式 */
+.figma-theme #mobile-nav-toggle {
+  background-color: var(--fig-primary);
+  border-radius: var(--fig-border-radius-md);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .figma-theme .sidebar {
+    border-radius: 0;
+  }
+  
+  .figma-theme .content {
+    padding: var(--fig-spacing-md);
+    padding-top: 70px;
+  }
+  
+  .figma-theme .content-header {
+    height: 60px;
+    padding: 0 var(--fig-spacing-md);
+    padding-left: 65px;
+    background-color: var(--fig-card-bg);
+    box-shadow: var(--fig-shadow-sm);
+    z-index: 1000;
+  }
+  
+  .figma-theme .stat-cards {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--fig-spacing-sm);
+  }
+  
+  .figma-theme .teacher-analytics-tabs {
+    grid-template-columns: 1fr;
+  }
+  
+  .figma-theme .analytics-tab {
+    min-height: 300px;
+  }
+  
+  .figma-theme .theme-switcher {
+    margin-right: 10px !important;
+  }
+} 

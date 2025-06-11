@@ -27,6 +27,32 @@
       color: #3a0ca3;
     }
     
+    /* 可创建课程的时间格样式 */
+    .clickable {
+      cursor: pointer;
+      position: relative;
+    }
+    
+    .clickable::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(67, 97, 238, 0);
+      transition: background-color 0.2s;
+    }
+    
+    .clickable:hover::after {
+      background-color: rgba(67, 97, 238, 0.1);
+    }
+    
+    /* 非可点击区域 */
+    .teacher-column:not(.current-teacher-column) .time-slot {
+      cursor: grab;
+    }
+    
     /* 课程创建提示 */
     .schedule-tip {
       font-size: 14px;
@@ -66,6 +92,138 @@
       .schedule-tip {
         font-size: 13px;
         line-height: 1.4;
+      }
+    }
+    
+    /* 模态框样式 */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+      overflow-y: auto;
+      padding: 20px;
+    }
+    
+    .modal.show {
+      display: flex;
+    }
+    
+    .modal-content {
+      background-color: white;
+      width: 90%;
+      max-width: 500px;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      animation: modal-appear 0.3s ease-out;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      margin: auto; /* 确保居中 */
+    }
+    
+    @keyframes modal-appear {
+      from {
+        transform: translateY(-30px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    
+    .modal-header {
+      padding: 15px 20px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .modal-header h3 {
+      margin: 0;
+      color: #3a0ca3;
+    }
+    
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    
+    .modal .close {
+      border: none;
+      background: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #666;
+    }
+    
+    /* 按钮样式 */
+    .btn-submit {
+      background-color: #3a0ca3;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .btn-secondary {
+      background-color: #e9ecef;
+      color: #495057;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    /* 表单样式 */
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      color: #333;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    
+    .form-group textarea {
+      min-height: 80px;
+    }
+    
+    /* 移动端模态框调整 */
+    @media (max-width: 768px) {
+      .modal {
+        align-items: flex-start; /* 在小屏幕上从顶部开始 */
+        padding: 10px;
+      }
+      
+      .modal-content {
+        margin: 50px auto 20px auto; /* 顶部增加间距 */
+        width: 95%;
       }
     }
   </style>
@@ -166,7 +324,7 @@
   
   <div class="action-bar">
     <button id="filter" class="action-button">统计</button>
-    <button id="view-rooms" class="action-button">我的</button>
+    <button id="view-profile" class="action-button">我的</button>
   </div>
   
   <button id="add-course" class="fab">+</button>
@@ -228,10 +386,389 @@
     </div>
   </div>
 
+  <!-- 个人资料的弹出层 -->
+  <div id="profile-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>个人资料</h3>
+        <button class="close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="profile-form">
+          <div class="form-group">
+            <label for="user-avatar">头像</label>
+            <div class="avatar-upload">
+              <img id="avatar-preview" src="assets/img/default-avatar.png" alt="头像预览" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 10px;">
+              <input type="file" id="user-avatar" accept="image/*" style="display: none">
+              <button type="button" id="select-avatar" class="btn-secondary" style="margin-right: 10px;">选择图片</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="user-name">姓名</label>
+            <input type="text" id="user-name" required>
+          </div>
+          <div class="form-group">
+            <label for="user-contact">联系方式</label>
+            <input type="text" id="user-contact">
+          </div>
+          <div class="form-group">
+            <label for="user-subject">授课科目</label>
+            <input type="text" id="user-subject">
+          </div>
+          <div class="form-group">
+            <label for="current-password">当前密码</label>
+            <input type="password" id="current-password">
+          </div>
+          <div class="form-group">
+            <label for="new-password">新密码</label>
+            <input type="password" id="new-password">
+          </div>
+          <div class="form-group">
+            <label for="confirm-password">确认新密码</label>
+            <input type="password" id="confirm-password">
+          </div>
+          <button type="submit" class="btn-submit">保存</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <script src="assets/js/auth.js?v=1.6"></script>
   <script src="assets/js/calendar.js?v=1.6"></script>
   <script src="assets/js/schedule.js?v=3.1"></script>
   <script>
+    // 添加课程时间冲突检查功能
+    document.addEventListener('DOMContentLoaded', function() {
+      // 获取当前登录教师的ID
+      let currentTeacherId = null;
+      try {
+        const currentUserJson = sessionStorage.getItem('currentUser');
+        if (currentUserJson) {
+          const currentUser = JSON.parse(currentUserJson);
+          currentTeacherId = currentUser.id || null;
+          
+          // 更新提示文字
+          const scheduleTip = document.querySelector('.schedule-tip');
+          if (scheduleTip && currentUser.name) {
+            scheduleTip.innerHTML = `提示：只能在<strong>${currentUser.name}</strong>的教师列(蓝色区域)创建课程。`;
+          }
+        }
+      } catch (error) {
+        console.error('获取当前用户ID失败:', error);
+      }
+      
+      // 获取课程表单
+      const courseForm = document.getElementById('course-form');
+      
+      if (courseForm) {
+        // 处理弹出创建课程模态框时的事件
+        const courseModal = document.getElementById('course-modal');
+        const addCourseBtn = document.getElementById('add-course');
+        
+        if (courseModal && addCourseBtn) {
+          // 监听模态框显示事件
+          addCourseBtn.addEventListener('click', function() {
+            // 在模态框显示前准备数据
+            const teacherSelect = document.getElementById('course-teacher');
+            if (teacherSelect && currentTeacherId) {
+              // 查找当前教师的选项并选中
+              for (let i = 0; i < teacherSelect.options.length; i++) {
+                if (teacherSelect.options[i].value == currentTeacherId) {
+                  teacherSelect.selectedIndex = i;
+                  break;
+                }
+              }
+              
+              // 禁用教师选择字段，只能为当前教师创建课程
+              teacherSelect.disabled = true;
+            }
+          });
+        }
+        
+        // 保存原始的提交处理函数，如果有的话
+        const originalSubmitHandler = courseForm.onsubmit;
+        
+        // 替换提交处理函数
+        courseForm.onsubmit = function(event) {
+          event.preventDefault();
+          
+          const teacherId = document.getElementById('course-teacher').value;
+          const courseDate = document.getElementById('course-date').value;
+          const startTime = document.getElementById('course-start').value;
+          const endTime = document.getElementById('course-end').value;
+          const roomId = document.getElementById('course-room').value;
+          
+          // 验证是否为当前教师创建课程
+          if (currentTeacherId && teacherId != currentTeacherId) {
+            alert('只能为当前登录的教师创建课程！');
+            return false;
+          }
+          
+          // 检查同一教师在同一时间段是否已有课程
+          if (hasTeacherTimeConflict(teacherId, courseDate, startTime, endTime)) {
+            alert('该教师在所选时间段已有其他课程安排！');
+            return false;
+          }
+          
+          // 检查同一教室在同一时间段是否已有课程
+          if (hasRoomTimeConflict(roomId, courseDate, startTime, endTime)) {
+            alert('所选教室在所选时间段已被占用！');
+            return false;
+          }
+          
+          // 如果没有冲突，调用原始的提交处理函数
+          if (typeof originalSubmitHandler === 'function') {
+            return originalSubmitHandler.call(this, event);
+          }
+          
+          // 没有原始处理函数，就手动提交
+          this.submit();
+        };
+      }
+      
+      // 检查教师时间冲突
+      function hasTeacherTimeConflict(teacherId, date, startTime, endTime) {
+        // 从sessionStorage或其他存储中获取现有课程
+        const coursesJson = sessionStorage.getItem('courses');
+        if (!coursesJson) return false;
+        
+        try {
+          const courses = JSON.parse(coursesJson);
+          
+          // 检查是否有冲突
+          return courses.some(course => {
+            // 只检查相同教师、相同日期的课程
+            if (course.teacherId == teacherId && course.date === date) {
+              // 时间转换为分钟以便比较
+              const courseStartMinutes = timeToMinutes(course.startTime);
+              const courseEndMinutes = timeToMinutes(course.endTime);
+              const newStartMinutes = timeToMinutes(startTime);
+              const newEndMinutes = timeToMinutes(endTime);
+              
+              // 检查时间重叠：新课程的开始时间在现有课程时间范围内，或结束时间在现有课程时间范围内
+              if ((newStartMinutes >= courseStartMinutes && newStartMinutes < courseEndMinutes) || 
+                  (newEndMinutes > courseStartMinutes && newEndMinutes <= courseEndMinutes) ||
+                  (newStartMinutes <= courseStartMinutes && newEndMinutes >= courseEndMinutes)) {
+                return true; // 有冲突
+              }
+            }
+            return false;
+          });
+        } catch (error) {
+          console.error('检查教师时间冲突时出错:', error);
+          return false;
+        }
+      }
+      
+      // 检查教室时间冲突
+      function hasRoomTimeConflict(roomId, date, startTime, endTime) {
+        // 从sessionStorage或其他存储中获取现有课程
+        const coursesJson = sessionStorage.getItem('courses');
+        if (!coursesJson) return false;
+        
+        try {
+          const courses = JSON.parse(coursesJson);
+          
+          // 检查是否有冲突
+          return courses.some(course => {
+            // 只检查相同教室、相同日期的课程
+            if (course.roomId == roomId && course.date === date) {
+              // 时间转换为分钟以便比较
+              const courseStartMinutes = timeToMinutes(course.startTime);
+              const courseEndMinutes = timeToMinutes(course.endTime);
+              const newStartMinutes = timeToMinutes(startTime);
+              const newEndMinutes = timeToMinutes(endTime);
+              
+              // 检查时间重叠
+              if ((newStartMinutes >= courseStartMinutes && newStartMinutes < courseEndMinutes) || 
+                  (newEndMinutes > courseStartMinutes && newEndMinutes <= courseEndMinutes) ||
+                  (newStartMinutes <= courseStartMinutes && newEndMinutes >= courseEndMinutes)) {
+                return true; // 有冲突
+              }
+            }
+            return false;
+          });
+        } catch (error) {
+          console.error('检查教室时间冲突时出错:', error);
+          return false;
+        }
+      }
+      
+      // 将时间字符串转换为分钟数
+      function timeToMinutes(timeStr) {
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        return hours * 60 + minutes;
+      }
+    });
+
+    // 处理个人资料模态框
+    document.addEventListener('DOMContentLoaded', function() {
+      // 获取模态框元素
+      const profileModal = document.getElementById('profile-modal');
+      const viewProfileBtn = document.getElementById('view-profile');
+      const closeButtons = profileModal.querySelectorAll('.close');
+      const profileForm = document.getElementById('profile-form');
+      const selectAvatarBtn = document.getElementById('select-avatar');
+      const userAvatarInput = document.getElementById('user-avatar');
+      const avatarPreview = document.getElementById('avatar-preview');
+      const headerAvatar = document.querySelector('.avatar'); // 页面顶部的头像元素
+      
+      // 加载当前用户信息
+      function loadUserProfile() {
+        const currentUserJson = sessionStorage.getItem('currentUser');
+        if (!currentUserJson) return;
+        
+        try {
+          const user = JSON.parse(currentUserJson);
+          document.getElementById('user-name').value = user.name || '';
+          document.getElementById('user-subject').value = user.subject || '';
+          document.getElementById('user-contact').value = user.contact || '';
+          
+          // 如果有头像数据，加载头像
+          if (user.avatar) {
+            avatarPreview.src = user.avatar;
+            
+            // 同时更新页面顶部的头像
+            if (headerAvatar) {
+              // 如果头像元素是图片
+              if (headerAvatar.tagName === 'IMG') {
+                headerAvatar.src = user.avatar;
+              } 
+              // 如果头像元素是div或其他容器
+              else {
+                headerAvatar.innerHTML = `<img src="${user.avatar}" alt="${user.name}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                headerAvatar.style.background = 'none';
+              }
+            }
+          }
+        } catch (error) {
+          console.error('加载用户信息失败:', error);
+        }
+      }
+      
+      // 页面加载时立即更新头像
+      loadUserProfile();
+      
+      // 打开模态框时加载用户信息
+      viewProfileBtn.addEventListener('click', function() {
+        loadUserProfile();
+        profileModal.classList.add('show');
+      });
+      
+      // 关闭模态框
+      closeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          profileModal.classList.remove('show');
+        });
+      });
+      
+      // 点击模态框外部关闭
+      window.addEventListener('click', function(event) {
+        if (event.target == profileModal) {
+          profileModal.classList.remove('show');
+        }
+      });
+      
+      // 选择头像
+      selectAvatarBtn.addEventListener('click', function() {
+        userAvatarInput.click();
+      });
+      
+      // 预览选择的头像
+      userAvatarInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            avatarPreview.src = e.target.result;
+          };
+          reader.readAsDataURL(this.files[0]);
+        }
+      });
+      
+      // 处理表单提交
+      profileForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        const name = document.getElementById('user-name').value;
+        const contact = document.getElementById('user-contact').value;
+        const subject = document.getElementById('user-subject').value;
+        const currentPassword = document.getElementById('current-password').value;
+        const newPassword = document.getElementById('new-password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+        
+        // 基本验证
+        if (!name) {
+          alert('请输入姓名');
+          return;
+        }
+        
+        // 验证新密码
+        if (newPassword) {
+          if (!currentPassword) {
+            alert('请输入当前密码');
+            return;
+          }
+          
+          if (newPassword !== confirmPassword) {
+            alert('两次输入的新密码不一致');
+            return;
+          }
+          
+          // 这里应该有验证当前密码的逻辑
+          // 由于无后端，此处简单模拟
+        }
+        
+        // 更新用户信息
+        try {
+          const currentUserJson = sessionStorage.getItem('currentUser');
+          if (!currentUserJson) return;
+          
+          const user = JSON.parse(currentUserJson);
+          user.name = name;
+          user.contact = contact;
+          user.subject = subject;
+          
+          // 更新头像
+          if (avatarPreview.src && avatarPreview.src !== 'assets/img/default-avatar.png') {
+            user.avatar = avatarPreview.src;
+            
+            // 同时更新页面顶部的头像
+            if (headerAvatar) {
+              // 如果头像元素是图片
+              if (headerAvatar.tagName === 'IMG') {
+                headerAvatar.src = avatarPreview.src;
+              } 
+              // 如果头像元素是div或其他容器
+              else {
+                headerAvatar.innerHTML = `<img src="${avatarPreview.src}" alt="${name}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                headerAvatar.style.background = 'none';
+              }
+            }
+          }
+          
+          // 更新密码
+          if (newPassword) {
+            user.password = newPassword; // 实际应用中应该加密
+          }
+          
+          // 保存更新后的用户信息
+          sessionStorage.setItem('currentUser', JSON.stringify(user));
+          
+          // 更新页面上显示的用户名
+          document.querySelector('.username').textContent = name;
+          
+          // 关闭模态框
+          profileModal.classList.remove('show');
+          
+          alert('个人信息更新成功！');
+          
+        } catch (error) {
+          console.error('更新用户信息失败:', error);
+          alert('更新用户信息失败，请重试');
+        }
+      });
+    });
+
     // 防止重复跳转的标记
     if (!sessionStorage.getItem('redirectAttempted')) {
       // 检查用户登录状态
