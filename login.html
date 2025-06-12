@@ -165,7 +165,7 @@
     </div>
     
     <div class="debug-section">
-      <button id="reset-data" type="button">重置数据</button>
+      <button id="reset-data" type="button">修复数据</button>
       <button id="check-storage" type="button">检查存储</button>
     </div>
   </div>
@@ -198,9 +198,23 @@
   
     // 添加调试功能
     document.getElementById('reset-data').addEventListener('click', function() {
-      localStorage.clear();
-      sessionStorage.clear();
-      alert('所有数据已重置，页面将刷新');
+      // 备份可能需要保留的数据
+      const schedulesBackup = localStorage.getItem('schedules');
+      const roomsBackup = localStorage.getItem('rooms');
+      const courseCategoriesBackup = localStorage.getItem('courseCategoriesData');
+
+      // 仅移除可能损坏的教师数据和登录标记
+      localStorage.removeItem('teachers');
+      sessionStorage.removeItem('currentUser');
+      sessionStorage.removeItem('redirectCheck');
+      sessionStorage.removeItem('redirectAttempted');
+
+      // 恢复课程、教室等数据
+      if (schedulesBackup) localStorage.setItem('schedules', schedulesBackup);
+      if (roomsBackup) localStorage.setItem('rooms', roomsBackup);
+      if (courseCategoriesBackup) localStorage.setItem('courseCategoriesData', courseCategoriesBackup);
+
+      alert('教师数据已修复，页面将刷新');
       location.reload();
     });
     
