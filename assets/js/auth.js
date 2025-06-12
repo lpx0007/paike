@@ -147,7 +147,7 @@ class AuthManager {
         teacherId: teacher.teacherId || teacher.id,
         name: teacher.name,
         username: teacher.username || `teacher${teacher.id || index + 1}`,
-        password: teacher.password,
+        password: teacher.password || (teacher.role === 'admin' ? 'admin123' : '123456'),
         role: teacher.role || "teacher",
         subject: Array.isArray(teacher.subject) ? teacher.subject : (teacher.subject ? [teacher.subject] : []),
         color: teacher.color || "#4361ee"
@@ -161,6 +161,20 @@ class AuthManager {
     
     // 确保管理员账号存在
     this.ensureAdminAccount();
+    
+    // 补全缺失密码
+    let updated = false;
+    this.teachers = this.teachers.map(t => {
+      if (!t.password) {
+        updated = true;
+        t.password = t.role === 'admin' ? 'admin123' : '123456';
+      }
+      return t;
+    });
+    if (updated) {
+      localStorage.setItem('teachers', JSON.stringify(this.teachers));
+      console.log('已为缺失密码的教师补充默认密码');
+    }
   }
   
   // 确保管理员账号存在
@@ -248,8 +262,8 @@ class AuthManager {
   }
   
   handleLogin() {
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
     
     if (!username || !password) {
       this.showLoginError('请输入用户名和密码');
