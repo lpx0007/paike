@@ -147,6 +147,8 @@ class ScheduleManager {
         "id": 1,
         "teacherId": 1,
         "name": "杨小菲",
+        "username": "teacher1",
+        "password": "123456",
         "subject": ["钢琴", "声乐"],
         "color": "#4361ee"
       },
@@ -154,6 +156,8 @@ class ScheduleManager {
         "id": 2,
         "teacherId": 2,
         "name": "李老师",
+        "username": "teacher2",
+        "password": "123456",
         "subject": ["钢琴"],
         "color": "#3a0ca3"
       },
@@ -161,6 +165,8 @@ class ScheduleManager {
         "id": 3,
         "teacherId": 3,
         "name": "王老师",
+        "username": "teacher3",
+        "password": "123456",
         "subject": ["声乐", "艺考"],
         "color": "#7209b7"
       },
@@ -168,6 +174,8 @@ class ScheduleManager {
         "id": 4,
         "teacherId": 4,
         "name": "刘老师",
+        "username": "teacher4",
+        "password": "123456",
         "subject": ["675"],
         "color": "#4cc9f0"
       },
@@ -175,6 +183,8 @@ class ScheduleManager {
         "id": 5,
         "teacherId": 5,
         "name": "赵老师",
+        "username": "teacher5",
+        "password": "123456",
         "subject": ["艺考"],
         "color": "#f72585"
       }

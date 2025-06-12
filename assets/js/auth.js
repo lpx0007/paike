@@ -38,6 +38,14 @@ class AuthManager {
         
         // 确保管理员账号存在
         this.ensureAdminAccount();
+        
+        // 如果数据缺失用户名字段，补全
+        this.teachers = this.teachers.map((t, idx) => {
+          if (!t.username) {
+            t.username = `teacher${t.teacherId || t.id || idx + 1}`;
+          }
+          return t;
+        });
       } catch (error) {
         console.error('解析教师数据失败:', error);
         await this.loadDefaultTeachers();
@@ -132,13 +140,13 @@ class AuthManager {
     }
     
     // 保存到localStorage前确保数据格式一致
-    const sanitizedData = this.teachers.map(teacher => {
+    const sanitizedData = this.teachers.map((teacher, index) => {
       // 确保所有教师数据格式一致
       return {
         id: teacher.id,
         teacherId: teacher.teacherId || teacher.id,
         name: teacher.name,
-        username: teacher.username,
+        username: teacher.username || `teacher${teacher.id || index + 1}`,
         password: teacher.password,
         role: teacher.role || "teacher",
         subject: Array.isArray(teacher.subject) ? teacher.subject : (teacher.subject ? [teacher.subject] : []),
@@ -262,9 +270,15 @@ class AuthManager {
   
   validateAndLogin(username, password) {
     // 查找用户
-    const user = this.teachers.find(
+    let user = this.teachers.find(
       t => t.username && t.username.toLowerCase() === username.toLowerCase()
     );
+    // 如果按用户名未找到，则尝试按中文姓名匹配
+    if (!user) {
+      user = this.teachers.find(
+        t => t.name && t.name === username
+      );
+    }
     
     if (!user) {
       console.error('用户不存在:', username, '可用教师:', this.teachers);
